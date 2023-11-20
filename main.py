@@ -26,7 +26,6 @@ while RUN:
 
     # Temp Ground
     drawLine(SCREEN, BLACK, [0, WINDOW_HEIGHT - 100], [WINDOW_WIDTH, WINDOW_HEIGHT - 100], 2)
-    pygame.draw.rect(SCREEN, BLACK, [20, 200, 10, 10])
     player.update()
 
 

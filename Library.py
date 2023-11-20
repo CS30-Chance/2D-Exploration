@@ -33,29 +33,68 @@ def loadSprite(file: str, width: int, height: int, frameCount: int, scale, color
         sprite.append(frame)
     return sprite
 
-class Player(pygame.sprite.Sprite):
-    def __init__(self, Surface, Position: [int, int], Speed):
-        pygame.sprite.Sprite.__init__(self)
-        # self.x = Position[0]
-        # self.y = Position[1]
-        self.surface = Surface
 
+class SpriteEntity(pygame.sprite.Sprite):
+    def __init__(self, surface, position: [int, int]):
+        pygame.sprite.Sprite.__init__(self)
+        self.surface = surface
         self.animationList = []
-        self.animationState = ['idle', 'run']
+        self.animationState = None
         self.animationCoolDown = 70
         self.lastFrame = pygame.time.get_ticks()
         self.frameIndex = 0
 
-        self.maxHealth = 100
-        self.health = self.maxHealth
-        self.speed = Speed
+        self.colorKey = BLACK
 
+        self.position = position
         self.direction = 1
         self.moveRight = False
         self.moveLeft = False
         self.flip = False
 
         self.actionState = 0
+
+        self.image = None
+        self.rect = None
+        # self.rect.center = None
+
+        self.mask = None
+        self.maskImage = None
+        # self.maskImage.set_colorkey(self.colorKey)
+
+    def loadSpriteSheet(self):
+        self.image = self.animationList[self.actionState][self.frameIndex]
+        self.rect = self.image.get_rect()
+        self.rect.center = self.position
+
+        self.mask = pygame.mask.from_surface(self.image)
+        self.maskImage = self.mask.to_surface()
+        self.maskImage.set_colorkey(self.colorKey)
+
+    def updateAnimation(self):
+        if self.moveLeft or self.moveRight:
+            self.actionState = 1
+            self.animationCoolDown = 90
+        else:
+            self.actionState = 0
+            self.animationCoolDown = 70
+
+        self.image = self.animationList[self.actionState][self.frameIndex]
+        if pygame.time.get_ticks() - self.lastFrame >= self.animationCoolDown:
+            self.lastFrame = pygame.time.get_ticks()
+            self.frameIndex += 1
+            if self.frameIndex + 1 >= len(self.animationList[self.actionState]):
+                self.frameIndex = 0
+
+        
+
+class Player(SpriteEntity):
+    def __init__(self, Surface, Position: [int, int], Speed):
+        SpriteEntity.__init__(self, Surface, Position)
+
+        self.maxHealth = 100
+        self.health = self.maxHealth
+        self.speed = Speed
 
         # Load idle and run sprite into animation list
         self.animationList.append(
@@ -66,12 +105,15 @@ class Player(pygame.sprite.Sprite):
             loadSprite('Assets/fire_knight/spritesheets/SpriteSheet.png',
                        288, 128, 8, 1.5, BLACK, 1))
 
+        # Load other animation properties
+        self.loadSpriteSheet()
 
-        self.image = self.animationList[self.actionState][self.frameIndex]
-        self.rect = self.image.get_rect()
-        self.rect.width = 93
-        self.rect.height = 70
-        # self.rect.center = Position
+    def updateMask(self):
+        self.mask = pygame.mask.from_surface(self.image)
+        self.maskImage = self.mask.to_surface()
+        self.maskImage = pygame.transform.flip(self.maskImage, self.flip, False)
+        self.maskImage.set_colorkey(BLACK)
+
 
 
     def move(self):
@@ -91,22 +133,8 @@ class Player(pygame.sprite.Sprite):
         self.rect.x += dx
         self.rect.y += dy
 
-    def updateAnimation(self):
-        if self.moveLeft or self.moveRight:
-            self.actionState = 1
-            self.animationCoolDown = 90
-        else:
-            self.actionState = 0
-            self.animationCoolDown = 70
-
-        self.image = self.animationList[self.actionState][self.frameIndex]
-        if pygame.time.get_ticks() - self.lastFrame >= self.animationCoolDown:
-            self.lastFrame = pygame.time.get_ticks()
-            self.frameIndex += 1
-            if self.frameIndex + 1 >= len(self.animationList[self.actionState]):
-                self.frameIndex = 0
-
     def update(self):
+        self.updateMask()
         self.updateAnimation()
         self.move()
         self.draw()
@@ -114,19 +142,18 @@ class Player(pygame.sprite.Sprite):
 
     def draw(self):
 
-        # print(self.image)
-        # self.character = pygame.Surface((64, 47))
-        # self.character.blit(self.image, (0, 0), (100, 80, 64, 47))
-        # print(self.character)
-        # self.rect = self.character.get_rect()
-
+        # Flip sprite when needed
         img = pygame.transform.flip(self.image, self.flip, False)
         # TODO Fix hitbox/Rect, create dynamic hitbox
-        
-        # print(mask)
-        self.surface.blit(img, self.rect, [150, 123, 93, 70])
+
+        # draw image to screen
+        self.surface.blit(img, self.rect)
+
+        # draw mask
+        # self.surface.blit(self.maskImage, (self.rect.x, self.rect.y))
+
+
         pygame.draw.rect(self.surface, 'green', self.rect, 1)
-        pygame.draw.rect(self.surface, 'red', [150, 123, 93, 70], 1)
 
 
 
