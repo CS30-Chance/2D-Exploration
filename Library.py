@@ -15,17 +15,19 @@ def drawLine(surface, color, start: [int, int], end: [int, int], lineWidth: int)
     return None
 
 
-def getImage(src, frame, width, height, scale, colorKey, vertical_offset=0):
+def getImage(src, frame, width, height, scale, colorKey=None, vertical_offset=0):
     """For loadSprite function"""
     srcImage = pygame.image.load(src)
     image = pygame.Surface((width, height)).convert_alpha()
     image.blit(srcImage, (0, 0), (frame * width, vertical_offset * height, width, height))
     image = pygame.transform.scale(image, (width * scale, height * scale))
-    image.set_colorkey(colorKey)
+    if colorKey is not None:
+        image.set_colorkey(colorKey)
+
     return image
 
 
-def loadSprite(file: str, width: int, height: int, frameCount: int, scale, colorKey, vertical_offset=0):
+def loadSprite(file: str, width: int, height: int, frameCount: int, scale, colorKey=None, vertical_offset=0):
     """Load sprite from spriteSheet to list"""
     sprite = []
     for f in range(frameCount):
@@ -71,20 +73,22 @@ class SpriteEntity(pygame.sprite.Sprite):
         self.maskImage = self.mask.to_surface()
         self.maskImage.set_colorkey(self.colorKey)
 
+    def updateMask(self):
+        self.mask = pygame.mask.from_surface(self.image)
+        self.maskImage = self.mask.to_surface()
+        self.maskImage.set_colorkey(BLACK)
+
     def updateAnimation(self):
-        if self.moveLeft or self.moveRight:
-            self.actionState = 1
-            self.animationCoolDown = 90
-        else:
-            self.actionState = 0
-            self.animationCoolDown = 70
 
         self.image = self.animationList[self.actionState][self.frameIndex]
         if pygame.time.get_ticks() - self.lastFrame >= self.animationCoolDown:
             self.lastFrame = pygame.time.get_ticks()
             self.frameIndex += 1
-            if self.frameIndex + 1 >= len(self.animationList[self.actionState]):
+            if self.frameIndex + 1 > len(self.animationList[self.actionState]):
                 self.frameIndex = 0
+
+        # flip sprite when needed
+        self.image = pygame.transform.flip(self.image, self.flip, False)
 
         
 
@@ -108,13 +112,13 @@ class Player(SpriteEntity):
         # Load other animation properties
         self.loadSpriteSheet()
 
-    def updateMask(self):
-        self.mask = pygame.mask.from_surface(self.image)
-        self.maskImage = self.mask.to_surface()
-        self.maskImage = pygame.transform.flip(self.maskImage, self.flip, False)
-        self.maskImage.set_colorkey(BLACK)
-
-
+    def updateActionState(self):
+        if self.moveLeft or self.moveRight:
+            self.actionState = 1
+            self.animationCoolDown = 90
+        else:
+            self.actionState = 0
+            self.animationCoolDown = 70
 
     def move(self):
         dx = 0
@@ -133,29 +137,59 @@ class Player(SpriteEntity):
         self.rect.x += dx
         self.rect.y += dy
 
+    def collisionDetection(self, mask, xOverlap, yOverlap):
+        if self.mask.overlap(mask, (xOverlap, yOverlap)):
+            print('hit')
+
+    def draw(self):
+        # draw image to screen
+        self.surface.blit(self.image, self.rect)
+
+        # draw mask
+        # self.surface.blit(self.maskImage, (self.rect.x, self.rect.y))
+
+        # draw rect box
+        pygame.draw.rect(self.surface, 'green', self.rect, 1)
+
     def update(self):
         self.updateMask()
+        self.updateActionState()
         self.updateAnimation()
         self.move()
         self.draw()
 
 
+class Enemy_FlyingEye(SpriteEntity):
+    def __init__(self, surface, position: [int, int], speed):
+        SpriteEntity.__init__(self, surface, position)
+
+        self.speed = speed
+
+        # load flight animation
+        self.animationList.append(
+            loadSprite('Assets/Monster/Flying eye/Flight.png', 150, 150, 8, 1, BLACK)
+        )
+
+
+        self.loadSpriteSheet()
+
+    def move(self):
+        pos = pygame.mouse.get_pos()
+        self.rect.center = pos
+
     def draw(self):
+        self.surface.blit(self.image, self.rect)
 
-        # Flip sprite when needed
-        img = pygame.transform.flip(self.image, self.flip, False)
-        # TODO Fix hitbox/Rect, create dynamic hitbox
+        # self.surface.blit(self.maskImage, self.rect)
 
-        # draw image to screen
-        self.surface.blit(img, self.rect)
-
-        # draw mask
-        # self.surface.blit(self.maskImage, (self.rect.x, self.rect.y))
+        pygame.draw.rect(self.surface, RED, self.rect, 1)
 
 
-        pygame.draw.rect(self.surface, 'green', self.rect, 1)
-
-
+    def update(self):
+        self.move()
+        self.updateMask()
+        self.updateAnimation()
+        self.draw()
 
 
 
