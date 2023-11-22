@@ -32,7 +32,8 @@ while RUN:
 
     if player.maskCollisionDetection(enemy_flying_eye):
         pygame.draw.rect(SCREEN, RED, [0, 0, 50, 50])
-        # print('hit')
+
+
 
     # Event Handler
     for event in pygame.event.get():

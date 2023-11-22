@@ -41,26 +41,24 @@ class SpriteEntity(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.surface = surface
         self.animationList = []
-        # self.animationState = None
         self.animationCoolDown = 70
         self.lastFrame = pygame.time.get_ticks()
+
         self.frameIndex = 0
+        self.colorKey = BLACK
+        self.flip = False
+        self.actionState = 0
+
         # number of cycles current animation has been run
         self.animationCycle = 0
-
-        self.colorKey = BLACK
 
         self.position = position
         self.direction = 1
         self.moveRight = False
         self.moveLeft = False
-        self.flip = False
-
-        self.actionState = 0
 
         self.image = None
         self.rect = None
-        # self.rect.center = None
 
         self.mask = None
         self.maskImage = None
@@ -82,10 +80,14 @@ class SpriteEntity(pygame.sprite.Sprite):
 
     def maskCollisionDetection(self, Obstacle):
         """Detect collision between object, must be sprite class"""
-        # TODO Optimize, rect collision first
         x_overlap = Obstacle.rect.x - self.rect.x
         y_overlap = Obstacle.rect.y - self.rect.y
-        return self.mask.overlap(Obstacle.mask, (x_overlap, y_overlap))
+        # Detect rect collision first for optimization
+        if pygame.Rect.colliderect(self.rect, Obstacle.rect):
+            pygame.draw.rect(self.surface, BLUE, [0, 0, 50, 50])
+            if self.mask.overlap(Obstacle.mask, (x_overlap, y_overlap)):
+                return True
+        return False
 
     def updateActionState(self, newState):
         if self.actionState != newState:
@@ -94,7 +96,6 @@ class SpriteEntity(pygame.sprite.Sprite):
             self.actionState = newState
 
     def updateAnimation(self):
-
         self.image = self.animationList[self.actionState][self.frameIndex]
         if pygame.time.get_ticks() - self.lastFrame >= self.animationCoolDown:
             self.lastFrame = pygame.time.get_ticks()
@@ -107,8 +108,6 @@ class SpriteEntity(pygame.sprite.Sprite):
         self.image = pygame.transform.flip(self.image, self.flip, False)
 
 
-
-        
 
 class Player(SpriteEntity):
     def __init__(self, Surface, Position: [int, int], Speed):
@@ -123,7 +122,7 @@ class Player(SpriteEntity):
         self.jump = False
         self.attacking_1 = False
 
-        self.spriteSheetPNG = pygame.image.load('Assets/fire_knight/spritesheets/SpriteSheet.png')
+        self.spriteSheetPNG = pygame.image.load('Assets/fire_knight/spritesheets/SpriteSheet2.png')
 
         # Load idle into animation list
         self.animationList.append(
@@ -131,18 +130,15 @@ class Player(SpriteEntity):
 
         # Load run into animation list
         self.animationList.append(
-            loadSprite(self.spriteSheetPNG,
-                       288, 128, 8, 1.5, BLACK, 1))
+            loadSprite(self.spriteSheetPNG, 288, 128, 8, 1.5, BLACK, 1))
 
         # Load jump into animation list
         self.animationList.append(
-            loadSprite(self.spriteSheetPNG,
-                       288, 128, 20, 1.5, BLACK, 4))
+            loadSprite(self.spriteSheetPNG, 288, 128, 20, 1.5, BLACK, 4))
 
         # Load attack1 into animation list
         self.animationList.append(
-            loadSprite(self.spriteSheetPNG,
-                       288, 128, 11, 1.5, BLACK, 7))
+            loadSprite(self.spriteSheetPNG, 288, 128, 11, 1.5, BLACK, 7))
 
 
 
@@ -156,15 +152,11 @@ class Player(SpriteEntity):
             'attack1': 3,
         }
 
-    # def attack1(self):
-    #     self.updateActionState(self.actions['attack1'])
-    #     if self.frameIndex < len(self.animationList[self.actions['attack1']]):
-    #         self.attacking_1 = False
-    #         return
-
     def move(self):
         dx = 0
         dy = 0
+
+        # TODO add gravity
 
         if self.moveLeft:
             dx -= self.speed
@@ -194,7 +186,7 @@ class Player(SpriteEntity):
 
     def update(self):
         # update action state
-        # TODO change attack trigger
+        # TODO Improve attack trigger
         if not self.attacking_1:
             if self.moveLeft or self.moveRight:
                 self.updateActionState(self.actions['run'])
@@ -206,8 +198,6 @@ class Player(SpriteEntity):
             if self.animationCycle >= 1:
                 self.attacking_1 = False
                 self.updateActionState(self.actions['idle'])
-
-
 
         self.updateMask()
         self.updateAnimation()
@@ -251,12 +241,5 @@ class Enemy_FlyingEye(SpriteEntity):
         self.updateMask()
         self.updateAnimation()
         self.draw()
-
-
-
-
-
-
-
 
 
