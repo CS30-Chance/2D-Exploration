@@ -17,9 +17,9 @@ def drawLine(surface, color, start: [int, int], end: [int, int], lineWidth: int)
 
 def getImage(src, frame, width, height, scale, colorKey=None, vertical_offset=0):
     """For loadSprite function"""
-    srcImage = pygame.image.load(src)
+    # srcImage = pygame.image.load(src)
     image = pygame.Surface((width, height)).convert_alpha()
-    image.blit(srcImage, (0, 0), (frame * width, vertical_offset * height, width, height))
+    image.blit(src, (0, 0), (frame * width, vertical_offset * height, width, height))
     image = pygame.transform.scale(image, (width * scale, height * scale))
     if colorKey is not None:
         image.set_colorkey(colorKey)
@@ -27,7 +27,7 @@ def getImage(src, frame, width, height, scale, colorKey=None, vertical_offset=0)
     return image
 
 
-def loadSprite(file: str, width: int, height: int, frameCount: int, scale, colorKey=None, vertical_offset=0):
+def loadSprite(file, width: int, height: int, frameCount: int, scale, colorKey=None, vertical_offset=0):
     """Load sprite from spriteSheet to list"""
     sprite = []
     for f in range(frameCount):
@@ -41,10 +41,12 @@ class SpriteEntity(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.surface = surface
         self.animationList = []
-        self.animationState = None
+        # self.animationState = None
         self.animationCoolDown = 70
         self.lastFrame = pygame.time.get_ticks()
         self.frameIndex = 0
+        # number of cycles current animation has been run
+        self.animationCycle = 0
 
         self.colorKey = BLACK
 
@@ -78,6 +80,19 @@ class SpriteEntity(pygame.sprite.Sprite):
         self.maskImage = self.mask.to_surface()
         self.maskImage.set_colorkey(BLACK)
 
+    def maskCollisionDetection(self, Obstacle):
+        """Detect collision between object, must be sprite class"""
+        # TODO Optimize, rect collision first
+        x_overlap = Obstacle.rect.x - self.rect.x
+        y_overlap = Obstacle.rect.y - self.rect.y
+        return self.mask.overlap(Obstacle.mask, (x_overlap, y_overlap))
+
+    def updateActionState(self, newState):
+        if self.actionState != newState:
+            self.animationCycle = 0
+            self.frameIndex = 0
+            self.actionState = newState
+
     def updateAnimation(self):
 
         self.image = self.animationList[self.actionState][self.frameIndex]
@@ -86,9 +101,12 @@ class SpriteEntity(pygame.sprite.Sprite):
             self.frameIndex += 1
             if self.frameIndex + 1 > len(self.animationList[self.actionState]):
                 self.frameIndex = 0
+                self.animationCycle += 1
 
         # flip sprite when needed
         self.image = pygame.transform.flip(self.image, self.flip, False)
+
+
 
         
 
@@ -100,25 +118,49 @@ class Player(SpriteEntity):
         self.health = self.maxHealth
         self.speed = Speed
 
-        # Load idle and run sprite into animation list
-        self.animationList.append(
-            loadSprite('Assets/fire_knight/spritesheets/SpriteSheet.png',
-                       288, 128, 8, 1.5, BLACK))
+        # self.animationCoolDown = 1000
 
+        self.jump = False
+        self.attacking_1 = False
+
+        self.spriteSheetPNG = pygame.image.load('Assets/fire_knight/spritesheets/SpriteSheet.png')
+
+        # Load idle into animation list
         self.animationList.append(
-            loadSprite('Assets/fire_knight/spritesheets/SpriteSheet.png',
+            loadSprite(self.spriteSheetPNG, 288, 128, 8, 1.5, BLACK))
+
+        # Load run into animation list
+        self.animationList.append(
+            loadSprite(self.spriteSheetPNG,
                        288, 128, 8, 1.5, BLACK, 1))
+
+        # Load jump into animation list
+        self.animationList.append(
+            loadSprite(self.spriteSheetPNG,
+                       288, 128, 20, 1.5, BLACK, 4))
+
+        # Load attack1 into animation list
+        self.animationList.append(
+            loadSprite(self.spriteSheetPNG,
+                       288, 128, 11, 1.5, BLACK, 7))
+
+
 
         # Load other animation properties
         self.loadSpriteSheet()
 
-    def updateActionState(self):
-        if self.moveLeft or self.moveRight:
-            self.actionState = 1
-            self.animationCoolDown = 90
-        else:
-            self.actionState = 0
-            self.animationCoolDown = 70
+        self.actions = {
+            'idle': 0,
+            'run': 1,
+            'jump': 2,
+            'attack1': 3,
+        }
+
+    # def attack1(self):
+    #     self.updateActionState(self.actions['attack1'])
+    #     if self.frameIndex < len(self.animationList[self.actions['attack1']]):
+    #         self.attacking_1 = False
+    #         return
 
     def move(self):
         dx = 0
@@ -134,12 +176,11 @@ class Player(SpriteEntity):
             self.flip = False
             self.direction = 1
 
+        if self.attacking_1:
+            dx = 0
+
         self.rect.x += dx
         self.rect.y += dy
-
-    def collisionDetection(self, mask, xOverlap, yOverlap):
-        if self.mask.overlap(mask, (xOverlap, yOverlap)):
-            print('hit')
 
     def draw(self):
         # draw image to screen
@@ -152,8 +193,23 @@ class Player(SpriteEntity):
         pygame.draw.rect(self.surface, 'green', self.rect, 1)
 
     def update(self):
+        # update action state
+        # TODO change attack trigger
+        if not self.attacking_1:
+            if self.moveLeft or self.moveRight:
+                self.updateActionState(self.actions['run'])
+            else:
+                self.updateActionState(self.actions['idle'])
+
+        if self.attacking_1:
+            self.updateActionState(self.actions['attack1'])
+            if self.animationCycle >= 1:
+                self.attacking_1 = False
+                self.updateActionState(self.actions['idle'])
+
+
+
         self.updateMask()
-        self.updateActionState()
         self.updateAnimation()
         self.move()
         self.draw()
@@ -165,13 +221,18 @@ class Enemy_FlyingEye(SpriteEntity):
 
         self.speed = speed
 
+        self.flightSpriteSheetPNG = pygame.image.load('Assets/Monster/Flying eye/Flight.png')
+
         # load flight animation
         self.animationList.append(
-            loadSprite('Assets/Monster/Flying eye/Flight.png', 150, 150, 8, 1, BLACK)
-        )
+            loadSprite(self.flightSpriteSheetPNG, 150, 150, 8, 1, BLACK))
 
 
         self.loadSpriteSheet()
+
+        self.actions = {
+            'idle': 1,
+        }
 
     def move(self):
         pos = pygame.mouse.get_pos()

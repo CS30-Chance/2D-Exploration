@@ -1,5 +1,3 @@
-import pygame
-
 from Library import *
 from Settings import *
 
@@ -27,14 +25,14 @@ while RUN:
 
     # Temp Ground
     drawLine(SCREEN, BLACK, [0, WINDOW_HEIGHT - 100], [WINDOW_WIDTH, WINDOW_HEIGHT - 100], 2)
+
+    # update player/enemy
     player.update()
     enemy_flying_eye.update()
-    player.collisionDetection(enemy_flying_eye.mask,
-                              enemy_flying_eye.rect.x - player.rect.x,
-                              enemy_flying_eye.rect.y - player.rect.y
-                              )
-    pygame.draw.circle(SCREEN, 'green', [player.rect.x, player.rect.y], 5)
 
+    if player.maskCollisionDetection(enemy_flying_eye):
+        pygame.draw.rect(SCREEN, RED, [0, 0, 50, 50])
+        # print('hit')
 
     # Event Handler
     for event in pygame.event.get():
@@ -50,7 +48,7 @@ while RUN:
                 print('jump')
 
         if event.type == pygame.MOUSEBUTTONDOWN:
-            print('attack')
+            player.attacking_1 = True
 
 
         if event.type == pygame.KEYUP:
