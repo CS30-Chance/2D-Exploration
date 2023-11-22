@@ -15,7 +15,6 @@ enemy_flying_eye = Enemy_FlyingEye(SCREEN, [400, 200], 5)
 # Game running area
 RUN = True
 while RUN:
-
     # Set game FPS
     CLOCK.tick(FPS)
 
@@ -46,7 +45,7 @@ while RUN:
             if event.key == pygame.K_d:
                 player.moveRight = True
             if event.key == pygame.K_SPACE:
-                print('jump')
+                player.jump = True
 
         if event.type == pygame.MOUSEBUTTONDOWN:
             player.attacking_1 = True

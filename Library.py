@@ -95,7 +95,7 @@ class SpriteEntity(pygame.sprite.Sprite):
             self.frameIndex = 0
             self.actionState = newState
 
-    def updateAnimation(self):
+    def updateAnimationFrame(self):
         self.image = self.animationList[self.actionState][self.frameIndex]
         if pygame.time.get_ticks() - self.lastFrame >= self.animationCoolDown:
             self.lastFrame = pygame.time.get_ticks()
@@ -103,6 +103,10 @@ class SpriteEntity(pygame.sprite.Sprite):
             if self.frameIndex + 1 > len(self.animationList[self.actionState]):
                 self.frameIndex = 0
                 self.animationCycle += 1
+
+                # TODO check if current state is attacking or jumping and end animation if so
+                if self.actionState in [2, 3]:
+                    pass
 
         # flip sprite when needed
         self.image = pygame.transform.flip(self.image, self.flip, False)
@@ -120,6 +124,7 @@ class Player(SpriteEntity):
         # self.animationCoolDown = 1000
 
         self.jump = False
+        self.inAir = False
         self.attacking_1 = False
 
         self.spriteSheetPNG = pygame.image.load('Assets/fire_knight/spritesheets/SpriteSheet2.png')
@@ -171,6 +176,8 @@ class Player(SpriteEntity):
         if self.attacking_1:
             dx = 0
 
+        # TODO add jump
+
         self.rect.x += dx
         self.rect.y += dy
 
@@ -183,6 +190,17 @@ class Player(SpriteEntity):
 
         # draw rect box
         pygame.draw.rect(self.surface, 'green', self.rect, 1)
+
+    def updateAction(self):
+        if self.attacking_1:
+            self.updateActionState(self.actions['attack1'])
+        elif self.jump:
+            self.updateActionState(self.actions['jump'])
+        elif self.moveRight or self.moveLeft:
+            self.updateActionState(self.actions['run'])
+        else:
+            self.updateActionState(self.actions['idle'])
+
 
     def update(self):
         # update action state
@@ -199,8 +217,15 @@ class Player(SpriteEntity):
                 self.attacking_1 = False
                 self.updateActionState(self.actions['idle'])
 
+        if self.jump:
+            self.updateActionState(self.actions['jump'])
+            if self.animationCycle >= 1:
+                self.jump = False
+            print(self.animationCycle)
+
+
         self.updateMask()
-        self.updateAnimation()
+        self.updateAnimationFrame()
         self.move()
         self.draw()
 
@@ -239,7 +264,7 @@ class Enemy_FlyingEye(SpriteEntity):
     def update(self):
         self.move()
         self.updateMask()
-        self.updateAnimation()
+        self.updateAnimationFrame()
         self.draw()
 
 
