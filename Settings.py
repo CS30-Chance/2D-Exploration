@@ -20,3 +20,5 @@ BLUE = (0, 0, 255)
 TILE_SIZE = None
 LEVEL_WIDTH = None
 LEVEL_HEIGHT = None
+
+GRAVITY = 0.8

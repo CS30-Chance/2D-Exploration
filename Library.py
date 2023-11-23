@@ -95,22 +95,6 @@ class SpriteEntity(pygame.sprite.Sprite):
             self.frameIndex = 0
             self.actionState = newState
 
-    def updateAnimationFrame(self):
-        self.image = self.animationList[self.actionState][self.frameIndex]
-        if pygame.time.get_ticks() - self.lastFrame >= self.animationCoolDown:
-            self.lastFrame = pygame.time.get_ticks()
-            self.frameIndex += 1
-            if self.frameIndex + 1 > len(self.animationList[self.actionState]):
-                self.frameIndex = 0
-                self.animationCycle += 1
-
-                # TODO check if current state is attacking or jumping and end animation if so
-                if self.actionState in [2, 3]:
-                    pass
-
-        # flip sprite when needed
-        self.image = pygame.transform.flip(self.image, self.flip, False)
-
 
 
 class Player(SpriteEntity):
@@ -125,7 +109,9 @@ class Player(SpriteEntity):
 
         self.jump = False
         self.inAir = False
-        self.attacking_1 = False
+        self.y_velocity = 0
+        self.attacking = False
+
 
         self.spriteSheetPNG = pygame.image.load('Assets/fire_knight/spritesheets/SpriteSheet2.png')
 
@@ -139,13 +125,19 @@ class Player(SpriteEntity):
 
         # Load jump into animation list
         self.animationList.append(
-            loadSprite(self.spriteSheetPNG, 288, 128, 20, 1.5, BLACK, 4))
+            loadSprite(self.spriteSheetPNG, 288, 128, 3, 1.5, BLACK, 2))
 
         # Load attack1 into animation list
         self.animationList.append(
             loadSprite(self.spriteSheetPNG, 288, 128, 11, 1.5, BLACK, 7))
 
+        # Load airAttack into animation list
+        self.animationList.append(
+            loadSprite(self.spriteSheetPNG, 288, 128, 8, 1.5, BLACK, 5))
 
+        # todo add special attack
+        # todo add been hit animation
+        # todo add death animation
 
         # Load other animation properties
         self.loadSpriteSheet()
@@ -155,13 +147,12 @@ class Player(SpriteEntity):
             'run': 1,
             'jump': 2,
             'attack1': 3,
+            'airAttack': 4,
         }
 
     def move(self):
         dx = 0
         dy = 0
-
-        # TODO add gravity
 
         if self.moveLeft:
             dx -= self.speed
@@ -173,10 +164,28 @@ class Player(SpriteEntity):
             self.flip = False
             self.direction = 1
 
-        if self.attacking_1:
-            dx = 0
+        # add jumping # warning temp
+        if self.jump and not self.inAir:
+            self.jump = False
+            self.inAir = True
+            self.y_velocity = -20
 
-        # TODO add jump
+        # Gravity
+        self.y_velocity += GRAVITY
+        if self.y_velocity > 10:
+            self.y_velocity = 10
+
+        dy += self.y_velocity
+
+        # Can't move when attack
+        if self.attacking:
+            dx = 0
+            dy = 0
+
+        # note temp ground collision
+        if self.rect.bottom + dy > 440:
+            dy = 440 - self.rect.bottom
+            self.inAir = False
 
         self.rect.x += dx
         self.rect.y += dy
@@ -192,38 +201,46 @@ class Player(SpriteEntity):
         pygame.draw.rect(self.surface, 'green', self.rect, 1)
 
     def updateAction(self):
-        if self.attacking_1:
-            self.updateActionState(self.actions['attack1'])
-        elif self.jump:
+        # Note when attack sequence is interrupt by the jump sequence, attack will restart when landed
+        if self.jump:
+            # todo add jump and falling animation base on y-velocity
             self.updateActionState(self.actions['jump'])
+        elif self.attacking:
+            if self.inAir:
+                self.updateActionState(self.actions['airAttack'])
+            else:
+                self.updateActionState(self.actions['attack1'])
         elif self.moveRight or self.moveLeft:
             self.updateActionState(self.actions['run'])
         else:
             self.updateActionState(self.actions['idle'])
 
+    def updateAnimationFrame(self):
+        self.image = self.animationList[self.actionState][self.frameIndex]
+        if pygame.time.get_ticks() - self.lastFrame >= self.animationCoolDown:
+            self.lastFrame = pygame.time.get_ticks()
+            self.frameIndex += 1
+            if self.frameIndex + 1 > len(self.animationList[self.actionState]):
+                self.frameIndex = 0
+                self.animationCycle += 1
+
+                # check if is attacking, if so, end after animation ended
+                if self.attacking:
+                    self.attacking = False
+                    self.updateActionState(self.actions['idle'])
+
+                # check if is jumped
+                # note use y_velocity to see which jump animation to use up/down
+                elif self.actionState is self.actions['jump']:
+                    # self.jump = False
+                    self.updateActionState(self.actions['idle'])
+
+        # flip sprite when needed
+        self.image = pygame.transform.flip(self.image, self.flip, False)
+
 
     def update(self):
-        # update action state
-        # TODO Improve attack trigger
-        if not self.attacking_1:
-            if self.moveLeft or self.moveRight:
-                self.updateActionState(self.actions['run'])
-            else:
-                self.updateActionState(self.actions['idle'])
-
-        if self.attacking_1:
-            self.updateActionState(self.actions['attack1'])
-            if self.animationCycle >= 1:
-                self.attacking_1 = False
-                self.updateActionState(self.actions['idle'])
-
-        if self.jump:
-            self.updateActionState(self.actions['jump'])
-            if self.animationCycle >= 1:
-                self.jump = False
-            print(self.animationCycle)
-
-
+        self.updateAction()
         self.updateMask()
         self.updateAnimationFrame()
         self.move()
@@ -252,6 +269,21 @@ class Enemy_FlyingEye(SpriteEntity):
     def move(self):
         pos = pygame.mouse.get_pos()
         self.rect.center = pos
+
+    def updateAnimationFrame(self):
+        self.image = self.animationList[self.actionState][self.frameIndex]
+        if pygame.time.get_ticks() - self.lastFrame >= self.animationCoolDown:
+            self.lastFrame = pygame.time.get_ticks()
+            self.frameIndex += 1
+            if self.frameIndex + 1 > len(self.animationList[self.actionState]):
+                self.frameIndex = 0
+                self.animationCycle += 1
+
+
+                # todo enemy attacking animation check
+
+        # flip sprite when needed
+        self.image = pygame.transform.flip(self.image, self.flip, False)
 
     def draw(self):
         self.surface.blit(self.image, self.rect)

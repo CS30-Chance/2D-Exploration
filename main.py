@@ -45,10 +45,11 @@ while RUN:
             if event.key == pygame.K_d:
                 player.moveRight = True
             if event.key == pygame.K_SPACE:
-                player.jump = True
+                if not player.inAir:
+                    player.jump = True
 
         if event.type == pygame.MOUSEBUTTONDOWN:
-            player.attacking_1 = True
+            player.attacking = True
 
 
         if event.type == pygame.KEYUP:
