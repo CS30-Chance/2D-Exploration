@@ -101,6 +101,7 @@ class Player(SpriteEntity):
     def __init__(self, Surface, Position: [int, int], Speed):
         SpriteEntity.__init__(self, Surface, Position)
 
+
         self.maxHealth = 100
         self.health = self.maxHealth
         self.speed = Speed
@@ -111,6 +112,9 @@ class Player(SpriteEntity):
         self.inAir = False
         self.y_velocity = 0
         self.attacking = False
+        self.specialAttacking = False
+        self.specialAttackDamage = 50
+        self.specialAttackCooldown = 200
 
 
         self.spriteSheetPNG = pygame.image.load('Assets/fire_knight/spritesheets/SpriteSheet2.png')
@@ -127,6 +131,10 @@ class Player(SpriteEntity):
         self.animationList.append(
             loadSprite(self.spriteSheetPNG, 288, 128, 3, 1.5, BLACK, 2))
 
+        # Load fall into animation list
+        self.animationList.append(
+            loadSprite(self.spriteSheetPNG, 288, 128, 3, 1.5, BLACK, 3))
+
         # Load attack1 into animation list
         self.animationList.append(
             loadSprite(self.spriteSheetPNG, 288, 128, 11, 1.5, BLACK, 7))
@@ -135,9 +143,17 @@ class Player(SpriteEntity):
         self.animationList.append(
             loadSprite(self.spriteSheetPNG, 288, 128, 8, 1.5, BLACK, 5))
 
-        # todo add special attack
-        # todo add been hit animation
-        # todo add death animation
+        # Load specialAttack into animation list
+        self.animationList.append(
+            loadSprite(self.spriteSheetPNG, 288, 128, 18, 1.5, BLACK, 10))
+
+        # Load takeHit into animation list
+        self.animationList.append(
+            loadSprite(self.spriteSheetPNG, 288, 128, 6, 1.5, BLACK, 12))
+
+        # Load death into animation list
+        self.animationList.append(
+            loadSprite(self.spriteSheetPNG, 288, 128, 12, 1.5, BLACK, 14))
 
         # Load other animation properties
         self.loadSpriteSheet()
@@ -146,8 +162,12 @@ class Player(SpriteEntity):
             'idle': 0,
             'run': 1,
             'jump': 2,
-            'attack1': 3,
-            'airAttack': 4,
+            'fall': 3,
+            'attack1': 4,
+            'airAttack': 5,
+            'specialAttack': 6,
+            'takeHit': 7,
+            'death': 8,
         }
 
     def move(self):
@@ -178,7 +198,7 @@ class Player(SpriteEntity):
         dy += self.y_velocity
 
         # Can't move when attack
-        if self.attacking:
+        if self.attacking or self.specialAttacking:
             dx = 0
             dy = 0
 
@@ -201,19 +221,27 @@ class Player(SpriteEntity):
         pygame.draw.rect(self.surface, 'green', self.rect, 1)
 
     def updateAction(self):
-        # Note when attack sequence is interrupt by the jump sequence, attack will restart when landed
-        if self.jump:
-            # todo add jump and falling animation base on y-velocity
-            self.updateActionState(self.actions['jump'])
-        elif self.attacking:
-            if self.inAir:
+        if self.inAir:
+            if self.attacking:
                 self.updateActionState(self.actions['airAttack'])
+            elif self.y_velocity < 0:
+                self.updateActionState(self.actions['jump'])
             else:
-                self.updateActionState(self.actions['attack1'])
+                self.updateActionState(self.actions['fall'])
+        elif self.specialAttacking:
+            self.updateActionState(self.actions['specialAttack'])
+        elif self.attacking:
+            self.updateActionState(self.actions['attack1'])
         elif self.moveRight or self.moveLeft:
             self.updateActionState(self.actions['run'])
         else:
             self.updateActionState(self.actions['idle'])
+
+    def dealingDamage(self, enemy):
+        # todo make player attack sealing damage to enemy
+        if self.maskCollisionDetection(enemy):
+            if self.specialAttacking:
+                return self.specialAttackDamage
 
     def updateAnimationFrame(self):
         self.image = self.animationList[self.actionState][self.frameIndex]
@@ -225,14 +253,9 @@ class Player(SpriteEntity):
                 self.animationCycle += 1
 
                 # check if is attacking, if so, end after animation ended
-                if self.attacking:
+                if self.attacking or self.specialAttacking:
                     self.attacking = False
-                    self.updateActionState(self.actions['idle'])
-
-                # check if is jumped
-                # note use y_velocity to see which jump animation to use up/down
-                elif self.actionState is self.actions['jump']:
-                    # self.jump = False
+                    self.specialAttacking = False
                     self.updateActionState(self.actions['idle'])
 
         # flip sprite when needed
@@ -240,6 +263,9 @@ class Player(SpriteEntity):
 
 
     def update(self):
+        # note decrease special attack cool down
+        self.specialAttackCooldown -= 1
+
         self.updateAction()
         self.updateMask()
         self.updateAnimationFrame()

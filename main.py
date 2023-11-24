@@ -44,6 +44,11 @@ while RUN:
                 player.moveLeft = True
             if event.key == pygame.K_d:
                 player.moveRight = True
+            if event.key == pygame.K_f:
+                if player.specialAttackCooldown <= 0:
+                    player.specialAttacking = True
+                    # warning maybe use other cool down function
+                    player.specialAttackCooldown = 200
             if event.key == pygame.K_SPACE:
                 if not player.inAir:
                     player.jump = True
