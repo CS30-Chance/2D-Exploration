@@ -202,7 +202,7 @@ class Player(SpriteEntity):
             dx = 0
             dy = 0
 
-        # note temp ground collision
+        # warning temp ground collision
         if self.rect.bottom + dy > 440:
             dy = 440 - self.rect.bottom
             self.inAir = False
