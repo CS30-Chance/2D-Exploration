@@ -17,7 +17,7 @@ BLUE = (0, 0, 255)
 
 
 # World Settings
-TILE_SIZE = None
+TILE_SIZE = 35
 LEVEL_WIDTH = None
 LEVEL_HEIGHT = None
 

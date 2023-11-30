@@ -1,5 +1,6 @@
-from Library import *
-from Settings import *
+from World import *
+from Player import Player
+from Enemy import *
 
 # Game initialization
 pygame.init()
@@ -9,7 +10,9 @@ SCREEN = pygame.display.set_mode([WINDOW_WIDTH, WINDOW_HEIGHT])
 
 player = Player(SCREEN, [20, 200], 7)
 enemy_flying_eye = Enemy_FlyingEye(SCREEN, [400, 200], 5)
-
+testTile = Ground(SCREEN, 5, 5)
+testTile2 = Ground(SCREEN, 6, 5)
+testTile3 = Ground(SCREEN, 4, 4)
 
 
 # Game running area
@@ -24,6 +27,10 @@ while RUN:
 
     # Temp Ground
     drawLine(SCREEN, BLACK, [0, WINDOW_HEIGHT - 100], [WINDOW_WIDTH, WINDOW_HEIGHT - 100], 2)
+    testTile.drawTile()
+    testTile2.drawTile()
+    testTile3.drawTile()
+
 
     # update player/enemy
     player.update()
