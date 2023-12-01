@@ -1,13 +1,17 @@
+import pygame
+
 from Library import *
+
 
 class Player(SpriteEntity):
     def __init__(self, Surface, Position: [int, int], Speed):
         SpriteEntity.__init__(self, Surface, Position)
 
-
         self.maxHealth = 100
         self.health = self.maxHealth
         self.speed = Speed
+
+        self.WorldObjects = None
 
         # self.animationCoolDown = 1000
 
@@ -18,6 +22,11 @@ class Player(SpriteEntity):
         self.specialAttacking = False
         self.specialAttackDamage = 50
         self.specialAttackCooldown = 200
+
+        # Create hitBox
+        self.hitBoxWidth = 50
+        self.hitBoxHeight = 70
+        self.hitBox = pygame.rect.Rect([self.position[0], self.position[1], self.hitBoxWidth, self.hitBoxHeight])
 
 
         self.spriteSheetPNG = pygame.image.load('Assets/fire_knight/spritesheets/SpriteSheet2.png')
@@ -110,18 +119,37 @@ class Player(SpriteEntity):
             dy = 440 - self.rect.bottom
             self.inAir = False
 
+        for element in self.WorldObjects:
+            self.collisionDetection(element, dx, dy)
+
+
         self.rect.x += dx
         self.rect.y += dy
 
-    def draw(self):
-        # draw image to screen
-        self.surface.blit(self.image, self.rect)
+    def collisionDetection(self, Object, dx, dy):
+        # todo collision detection while moving
+        distanceX = 0
+        distanceY = 0
 
-        # draw mask
-        # self.surface.blit(self.maskImage, (self.rect.x, self.rect.y))
+        # dx section
+        DeltaHitBox = pygame.Rect(self.hitBox)
+        # DeltaHitBox = self.hitBox
+        # pygame.draw.rect(self.surface, 'black', DeltaHitBox, 1)
+        DeltaHitBox.x += dx
+        # warning is also changes hitbox
+        if pygame.Rect.colliderect(DeltaHitBox, Object.rect):
+            print(self.hitBox.x, Object.rect.x)
+            # todo finish collision detection
+            if self.hitBox.x < Object.rect.x:
+                print('hit from left')
+            elif self.hitBox.x > Object.rect.x:
+                print('hit from right')
 
-        # draw rect box
-        pygame.draw.rect(self.surface, 'green', self.rect, 1)
+        # dy section
+
+        # create new hit box
+        # don't use mask for collision with environment
+
 
     def updateAction(self):
         if self.inAir:
@@ -165,9 +193,27 @@ class Player(SpriteEntity):
         self.image = pygame.transform.flip(self.image, self.flip, False)
 
 
+    def draw(self):
+        # draw image to screen
+        self.surface.blit(self.image, self.rect)
+
+        # draw mask
+        self.surface.blit(self.maskImage, (self.rect.x, self.rect.y))
+
+        # draw rect box
+        pygame.draw.rect(self.surface, GREEN, self.rect, 1)
+
+        # draw hitBox
+        pygame.draw.rect(self.surface, BLUE, self.hitBox, 1)
+
+
     def update(self):
         # note decrease special attack cool down
         self.specialAttackCooldown -= 1
+
+        # update hitBox
+        self.hitBox.bottom = self.rect.bottom
+        self.hitBox.centerx = self.rect.centerx
 
         self.updateAction()
         self.updateMask()

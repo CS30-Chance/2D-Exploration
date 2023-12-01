@@ -50,6 +50,7 @@ class SpriteEntity(pygame.sprite.Sprite):
         self.actionState = 0
 
         # number of cycles current animation has been run
+        # warning is animation cycle needed????
         self.animationCycle = 0
 
         self.position = position
@@ -94,5 +95,3 @@ class SpriteEntity(pygame.sprite.Sprite):
             self.animationCycle = 0
             self.frameIndex = 0
             self.actionState = newState
-
-
