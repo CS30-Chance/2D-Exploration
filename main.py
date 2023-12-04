@@ -15,7 +15,7 @@ testTile1 = Ground(SCREEN, 5, 5)
 testTile2 = Ground(SCREEN, 6, 5)
 testTile3 = Ground(SCREEN, 4, 4)
 testTile4 = Ground(SCREEN, 8, 7)
-testTile5 = Ground(SCREEN, 10, 10)
+testTile5 = Ground(SCREEN, 20, 10)
 
 Tiles = [testTile1, testTile2, testTile3, testTile4, testTile5]
 

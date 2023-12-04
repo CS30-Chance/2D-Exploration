@@ -1,5 +1,3 @@
-import pygame
-
 from Library import *
 
 
@@ -120,7 +118,7 @@ class Player(SpriteEntity):
             self.inAir = False
 
         for element in self.WorldObjects:
-            self.collisionDetection(element, dx, dy)
+            dx, dy = self.collisionDetection(element, dx, dy)
 
 
         self.rect.x += dx
@@ -128,22 +126,36 @@ class Player(SpriteEntity):
 
     def collisionDetection(self, Object, dx, dy):
         # todo collision detection while moving
-        distanceX = 0
-        distanceY = 0
+        distanceX = dx
+        distanceY = dy
 
         # dx section
         DeltaHitBox = pygame.Rect(self.hitBox)
-        # DeltaHitBox = self.hitBox
-        # pygame.draw.rect(self.surface, 'black', DeltaHitBox, 1)
+        print('original hb', DeltaHitBox)
         DeltaHitBox.x += dx
+        print('hb + dx', DeltaHitBox)
         # warning is also changes hitbox
+        # Check horizontal collision
         if pygame.Rect.colliderect(DeltaHitBox, Object.rect):
-            print(self.hitBox.x, Object.rect.x)
-            # todo finish collision detection
             if self.hitBox.x < Object.rect.x:
-                print('hit from left')
+                distanceX = Object.rect.left - self.hitBox.right
             elif self.hitBox.x > Object.rect.x:
-                print('hit from right')
+                distanceX = Object.rect.right - self.hitBox.left
+
+        # vertical section
+        DeltaHitBox = pygame.Rect(self.hitBox)
+        DeltaHitBox.y += dy
+        # Check vertical collision
+        if pygame.Rect.colliderect(DeltaHitBox, Object.rect):
+            if self.hitBox.y < Object.rect.y:
+                self.inAir = False  # landed
+                distanceY = Object.rect.top - self.hitBox.bottom
+            elif self.hitBox.y > Object.rect.y:
+                self.y_velocity = 0  # reset y velocity d
+                distanceY = Object.rect.bottom - self.hitBox.top
+
+
+        return distanceX, distanceY
 
         # dy section
 
@@ -198,7 +210,7 @@ class Player(SpriteEntity):
         self.surface.blit(self.image, self.rect)
 
         # draw mask
-        self.surface.blit(self.maskImage, (self.rect.x, self.rect.y))
+        # self.surface.blit(self.maskImage, (self.rect.x, self.rect.y))
 
         # draw rect box
         pygame.draw.rect(self.surface, GREEN, self.rect, 1)
