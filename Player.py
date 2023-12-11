@@ -131,9 +131,9 @@ class Player(SpriteEntity):
 
         # dx section
         DeltaHitBox = pygame.Rect(self.hitBox)
-        print('original hb', DeltaHitBox)
+        # print('original hb', DeltaHitBox)
         DeltaHitBox.x += dx
-        print('hb + dx', DeltaHitBox)
+        # print('hb + dx', DeltaHitBox)
         # warning is also changes hitbox
         # Check horizontal collision
         if pygame.Rect.colliderect(DeltaHitBox, Object.rect):
@@ -193,7 +193,7 @@ class Player(SpriteEntity):
             self.frameIndex += 1
             if self.frameIndex + 1 > len(self.animationList[self.actionState]):
                 self.frameIndex = 0
-                self.animationCycle += 1
+                # self.animationCycle += 1
 
                 # check if is attacking, if so, end after animation ended
                 if self.attacking or self.specialAttacking:

@@ -15,9 +15,16 @@ testTile1 = Ground(SCREEN, 5, 5)
 testTile2 = Ground(SCREEN, 6, 5)
 testTile3 = Ground(SCREEN, 4, 4)
 testTile4 = Ground(SCREEN, 8, 7)
-testTile5 = Ground(SCREEN, 20, 10)
+testTile5 = Ground(SCREEN, 19, 12)
+testTile6 = Ground(SCREEN, 18, 12)
+testTile7 = Ground(SCREEN, 17, 12)
+testTile8 = Ground(SCREEN, 16, 12)
+testTile9 = Ground(SCREEN, 15, 12)
+testTile10 = Ground(SCREEN, 14, 12)
+testTile11 = Ground(SCREEN, 13, 12)
 
-Tiles = [testTile1, testTile2, testTile3, testTile4, testTile5]
+
+Tiles = [testTile1, testTile2, testTile3, testTile4, testTile5, testTile6, testTile7, testTile8, testTile9, testTile10, testTile11]
 
 
 # Game running area

@@ -21,5 +21,8 @@ class Ground:
 class World:
     def __init__(self):
         # todo use tile-map csv to load world
-        self.tileMap = None
+        self.tileMap = 'TileMap.csv'
+
+        for c in self.tileMap:
+            print(c)
 

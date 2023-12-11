@@ -50,8 +50,8 @@ class SpriteEntity(pygame.sprite.Sprite):
         self.actionState = 0
 
         # number of cycles current animation has been run
-        # warning is animation cycle needed????
-        self.animationCycle = 0
+        # note is animation cycle needed????
+        # self.animationCycle = 0
 
         self.position = position
         self.direction = 1
@@ -92,6 +92,6 @@ class SpriteEntity(pygame.sprite.Sprite):
 
     def updateActionState(self, newState):
         if self.actionState != newState:
-            self.animationCycle = 0
+            # self.animationCycle = 0
             self.frameIndex = 0
             self.actionState = newState

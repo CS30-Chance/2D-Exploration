@@ -30,7 +30,7 @@ class Enemy_FlyingEye(SpriteEntity):
             self.frameIndex += 1
             if self.frameIndex + 1 > len(self.animationList[self.actionState]):
                 self.frameIndex = 0
-                self.animationCycle += 1
+                # self.animationCycle += 1
 
 
                 # todo enemy attacking animation check
