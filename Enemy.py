@@ -5,18 +5,25 @@ class Enemy_FlyingEye(SpriteEntity):
         SpriteEntity.__init__(self, surface, position)
 
         self.speed = speed
+        self.health = 70
 
         self.flightSpriteSheetPNG = pygame.image.load('Assets/Monster/Flying eye/Flight.png')
+        self.takeHitSpriteSheetPNG = pygame.image.load('Assets/Monster/Flying eye/Take Hit.png')
 
         # load flight animation
         self.animationList.append(
             loadSprite(self.flightSpriteSheetPNG, 150, 150, 8, 1, BLACK))
 
+        # load takeHit animation
+        self.animationList.append(
+            loadSprite(self.takeHitSpriteSheetPNG, 150, 150, 4, 1, BLACK))
+
 
         self.loadSpriteSheet()
 
         self.actions = {
-            'idle': 1,
+            'idle': 0,
+            'takeHit': 1,
         }
 
     def move(self):
@@ -34,6 +41,8 @@ class Enemy_FlyingEye(SpriteEntity):
 
 
                 # todo enemy attacking animation check
+                if self.actionState == self.actions['takeHit']:
+                    self.updateActionState(self.actions['idle'])
 
         # flip sprite when needed
         self.image = pygame.transform.flip(self.image, self.flip, False)

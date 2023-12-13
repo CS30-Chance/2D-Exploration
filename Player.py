@@ -10,6 +10,7 @@ class Player(SpriteEntity):
         self.speed = Speed
 
         self.WorldObjects = None
+        self.enemyList = []
 
         # self.animationCoolDown = 1000
 
@@ -20,6 +21,8 @@ class Player(SpriteEntity):
         self.specialAttacking = False
         self.specialAttackDamage = 50
         self.specialAttackCooldown = 200
+
+        self.baseAttackDamage = 20
 
         # Create hitBox
         self.hitBoxWidth = 50
@@ -94,7 +97,7 @@ class Player(SpriteEntity):
             self.flip = False
             self.direction = 1
 
-        # add jumping # warning temp
+        # add jumping
         if self.jump and not self.inAir:
             self.jump = False
             self.inAir = True
@@ -112,10 +115,6 @@ class Player(SpriteEntity):
             dx = 0
             dy = 0
 
-        # warning temp ground collision
-        if self.rect.bottom + dy > 440:
-            dy = 440 - self.rect.bottom
-            self.inAir = False
 
         for element in self.WorldObjects:
             dx, dy = self.collisionDetection(element, dx, dy)
@@ -125,7 +124,6 @@ class Player(SpriteEntity):
         self.rect.y += dy
 
     def collisionDetection(self, Object, dx, dy):
-        # todo collision detection while moving
         distanceX = dx
         distanceY = dy
 
@@ -185,6 +183,17 @@ class Player(SpriteEntity):
         if self.maskCollisionDetection(enemy):
             if self.specialAttacking:
                 return self.specialAttackDamage
+            elif self.attacking:
+                return self.baseAttackDamage
+        else:
+            return 0
+
+    def attack(self, enemyList):
+        for enemy in enemyList:
+            damage = self.dealingDamage(enemy)
+            if damage != 0:
+                enemy.health -= damage
+                enemy.updateActionState(enemy.actions['takeHit'])
 
     def updateAnimationFrame(self):
         self.image = self.animationList[self.actionState][self.frameIndex]
@@ -230,5 +239,6 @@ class Player(SpriteEntity):
         self.updateAction()
         self.updateMask()
         self.updateAnimationFrame()
+        self.attack(self.enemyList)
         self.move()
         self.draw()

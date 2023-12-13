@@ -11,21 +11,14 @@ SCREEN = pygame.display.set_mode([WINDOW_WIDTH, WINDOW_HEIGHT])
 player = Player(SCREEN, [20, 200], 7)
 enemy_flying_eye = Enemy_FlyingEye(SCREEN, [400, 200], 5)
 
-testTile1 = Ground(SCREEN, 5, 5)
-testTile2 = Ground(SCREEN, 6, 5)
-testTile3 = Ground(SCREEN, 4, 4)
-testTile4 = Ground(SCREEN, 8, 7)
-testTile5 = Ground(SCREEN, 19, 12)
-testTile6 = Ground(SCREEN, 18, 12)
-testTile7 = Ground(SCREEN, 17, 12)
-testTile8 = Ground(SCREEN, 16, 12)
-testTile9 = Ground(SCREEN, 15, 12)
-testTile10 = Ground(SCREEN, 14, 12)
-testTile11 = Ground(SCREEN, 13, 12)
 
 
-Tiles = [testTile1, testTile2, testTile3, testTile4, testTile5, testTile6, testTile7, testTile8, testTile9, testTile10, testTile11]
+# create world
+world = World(SCREEN)
+GroundTiles = world.buildGround()
+Tiles.extend(GroundTiles)
 
+Enemy.append(enemy_flying_eye)
 
 # Game running area
 RUN = True
@@ -37,21 +30,24 @@ while RUN:
     drawBackground(SCREEN, GREY)
 
 
-    # Temp Ground
-    drawLine(SCREEN, BLACK, [0, WINDOW_HEIGHT - 100], [WINDOW_WIDTH, WINDOW_HEIGHT - 100], 2)
-    for tiles in Tiles:
-        tiles.drawTile()
+    # Ground
+    for ground in GroundTiles:
+        ground.drawGround()
 
-    # note update object that player collide with
+
+    # update object that player collide with
     player.WorldObjects = Tiles
+    # update enemy list
+    player.enemyList = Enemy
 
 
     # update player/enemy
     player.update()
-    enemy_flying_eye.update()
+    for e in Enemy:
+        e.update()
 
-    if player.maskCollisionDetection(enemy_flying_eye):
-        pygame.draw.rect(SCREEN, RED, [0, 0, 50, 50])
+    # if player.maskCollisionDetection(enemy_flying_eye):
+    #     pygame.draw.rect(SCREEN, RED, [0, 0, 50, 50])
 
 
 

@@ -1,5 +1,6 @@
 import pygame
 from Settings import *
+import csv
 
 class Ground:
     def __init__(self, surface, x, y):
@@ -12,17 +13,38 @@ class Ground:
         self.rect = self.spritesImage.get_rect()
         self.rect.topleft = [self.x, self.y]
 
-    def drawTile(self):
+    def drawGround(self):
         self.surface.blit(self.spritesImage, [self.x, self.y])
-        pygame.draw.rect(self.surface, 'green', self.rect, 1)
+        # pygame.draw.rect(self.surface, 'green', self.rect, 1)
         
 
 
 class World:
-    def __init__(self):
+    def __init__(self, surface):
         # todo use tile-map csv to load world
-        self.tileMap = 'TileMap.csv'
+        self.tileMapFile = 'TileMap.csv'
+        self.surface = surface
+        self.tileMap = csv.reader(open(self.tileMapFile, 'r'))
+        self.tilesList = []
+        self.groundTiles = []
 
-        for c in self.tileMap:
-            print(c)
+        # load tiles into list
+        for y_Pos, r in enumerate(self.tileMap):
+            temp = []
+            for x_Pos, c in enumerate(r):
+                temp.append(c)
+
+                # if is ground tile, add to ground tile list
+                if c == '1':
+                    self.groundTiles.append([x_Pos, y_Pos])
+
+            self.tilesList.append(temp)
+
+    def buildGround(self):
+        ground = []
+        for cord in self.groundTiles:
+            tempGround = Ground(self.surface, cord[0], cord[1])
+            ground.append(tempGround)
+        return ground
+
 

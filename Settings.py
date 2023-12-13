@@ -22,3 +22,9 @@ LEVEL_WIDTH = None
 LEVEL_HEIGHT = None
 
 GRAVITY = 0.8
+
+# global tiles list
+Tiles = []
+
+# global enemy list
+Enemy = []
