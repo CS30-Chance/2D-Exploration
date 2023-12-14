@@ -8,8 +8,9 @@ CLOCK = pygame.time.Clock()
 SCREEN = pygame.display.set_mode([WINDOW_WIDTH, WINDOW_HEIGHT])
 
 
-player = Player(SCREEN, [20, 200], 7)
-enemy_flying_eye = Enemy_FlyingEye(SCREEN, [400, 200], 5)
+player = Player(SCREEN, [2, 4], 7)
+enemy_flying_eye = FlyingEye(SCREEN, [7, 7], 5)
+enemy_skeleton = Skeleton(SCREEN, [5, 11], 5)
 
 
 
@@ -19,6 +20,7 @@ GroundTiles = world.buildGround()
 Tiles.extend(GroundTiles)
 
 Enemy.append(enemy_flying_eye)
+Enemy.append(enemy_skeleton)
 
 # Game running area
 RUN = True
@@ -29,8 +31,7 @@ while RUN:
     # Draw Background
     drawBackground(SCREEN, GREY)
 
-
-    # Ground
+    # Draw Ground
     for ground in GroundTiles:
         ground.drawGround()
 
@@ -43,13 +44,12 @@ while RUN:
 
     # update player/enemy
     player.update()
-    for e in Enemy:
+    for index, e in enumerate(Enemy):
         e.update()
 
-    # if player.maskCollisionDetection(enemy_flying_eye):
-    #     pygame.draw.rect(SCREEN, RED, [0, 0, 50, 50])
-
-
+        # kill enemy
+        if not e.alive:
+            Enemy.pop(index)
 
     # Event Handler
     for event in pygame.event.get():
@@ -62,10 +62,10 @@ while RUN:
             if event.key == pygame.K_d:
                 player.moveRight = True
             if event.key == pygame.K_f:
-                if player.specialAttackCooldown <= 0:
+                if player.specialAttackCooldownTimer <= 0:
+                    # player special attack cool down
                     player.specialAttacking = True
-                    # warning maybe use other cool down function
-                    player.specialAttackCooldown = 200
+                    player.specialAttackCooldownTimer = player.specialAttackCooldown
             if event.key == pygame.K_SPACE:
                 if not player.inAir:
                     player.jump = True

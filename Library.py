@@ -53,7 +53,7 @@ class SpriteEntity(pygame.sprite.Sprite):
         # note is animation cycle needed????
         # self.animationCycle = 0
 
-        self.position = position
+        self.position = [position[0] * TILE_SIZE, position[1] * TILE_SIZE]
         self.direction = 1
         self.moveRight = False
         self.moveLeft = False
@@ -85,7 +85,6 @@ class SpriteEntity(pygame.sprite.Sprite):
         y_overlap = Obstacle.rect.y - self.rect.y
         # Detect rect collision first for optimization
         if pygame.Rect.colliderect(self.rect, Obstacle.rect):
-            pygame.draw.rect(self.surface, BLUE, [0, 0, 50, 50])
             if self.mask.overlap(Obstacle.mask, (x_overlap, y_overlap)):
                 return True
         return False

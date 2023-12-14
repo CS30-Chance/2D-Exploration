@@ -22,6 +22,7 @@ LEVEL_WIDTH = None
 LEVEL_HEIGHT = None
 
 GRAVITY = 0.8
+InvincibleFrame = 50
 
 # global tiles list
 Tiles = []

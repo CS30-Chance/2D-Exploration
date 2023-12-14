@@ -20,7 +20,9 @@ class Player(SpriteEntity):
         self.attacking = False
         self.specialAttacking = False
         self.specialAttackDamage = 50
+
         self.specialAttackCooldown = 200
+        self.specialAttackCooldownTimer = 0
 
         self.baseAttackDamage = 20
 
@@ -155,11 +157,6 @@ class Player(SpriteEntity):
 
         return distanceX, distanceY
 
-        # dy section
-
-        # create new hit box
-        # don't use mask for collision with environment
-
 
     def updateAction(self):
         if self.inAir:
@@ -179,23 +176,21 @@ class Player(SpriteEntity):
             self.updateActionState(self.actions['idle'])
 
     def dealingDamage(self, enemy):
-        # todo make player attack sealing damage to enemy
         if self.maskCollisionDetection(enemy):
             if self.specialAttacking:
                 return self.specialAttackDamage
             elif self.attacking:
                 return self.baseAttackDamage
-            else:
-                return 0
-        else:
-            return 0
+        return 0
 
     def attack(self, enemyList):
         for enemy in enemyList:
             damage = self.dealingDamage(enemy)
             if damage != 0:
-                enemy.health -= damage
-                enemy.updateActionState(enemy.actions['takeHit'])
+                if enemy.invincibleTimer <= 0:
+                    enemy.health -= damage
+                    enemy.updateActionState(enemy.actions['takeHit'])
+                    enemy.invincibleTimer = enemy.invincibleFrame
 
     def updateAnimationFrame(self):
         self.image = self.animationList[self.actionState][self.frameIndex]
@@ -232,7 +227,7 @@ class Player(SpriteEntity):
 
     def update(self):
         # note decrease special attack cool down
-        self.specialAttackCooldown -= 1
+        self.specialAttackCooldownTimer -= 1
 
         # update hitBox
         self.hitBox.bottom = self.rect.bottom
