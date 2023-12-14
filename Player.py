@@ -185,6 +185,8 @@ class Player(SpriteEntity):
                 return self.specialAttackDamage
             elif self.attacking:
                 return self.baseAttackDamage
+            else:
+                return 0
         else:
             return 0
 
