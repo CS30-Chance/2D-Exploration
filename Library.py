@@ -49,9 +49,6 @@ class SpriteEntity(pygame.sprite.Sprite):
         self.flip = False
         self.actionState = 0
 
-        # number of cycles current animation has been run
-        # note is animation cycle needed????
-        # self.animationCycle = 0
 
         self.position = [position[0] * TILE_SIZE, position[1] * TILE_SIZE]
         self.direction = 1
@@ -63,7 +60,6 @@ class SpriteEntity(pygame.sprite.Sprite):
 
         self.mask = None
         self.maskImage = None
-        # self.maskImage.set_colorkey(self.colorKey)
 
     def loadSpriteSheet(self):
         self.image = self.animationList[self.actionState][self.frameIndex]
@@ -91,6 +87,5 @@ class SpriteEntity(pygame.sprite.Sprite):
 
     def updateActionState(self, newState):
         if self.actionState != newState:
-            # self.animationCycle = 0
             self.frameIndex = 0
             self.actionState = newState

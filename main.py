@@ -10,7 +10,7 @@ SCREEN = pygame.display.set_mode([WINDOW_WIDTH, WINDOW_HEIGHT])
 
 player = Player(SCREEN, [2, 4], 7)
 enemy_flying_eye = FlyingEye(SCREEN, [7, 7], 5)
-enemy_skeleton = Skeleton(SCREEN, [5, 11], 5)
+enemy_skeleton = Skeleton(SCREEN, [17, 11], 2)
 
 
 
@@ -44,6 +44,7 @@ while RUN:
 
     # update player/enemy
     player.update()
+
     for index, e in enumerate(Enemy):
         e.update()
 

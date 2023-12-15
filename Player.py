@@ -131,11 +131,7 @@ class Player(SpriteEntity):
 
         # dx section
         DeltaHitBox = pygame.Rect(self.hitBox)
-        # print('original hb', DeltaHitBox)
         DeltaHitBox.x += dx
-        # print('hb + dx', DeltaHitBox)
-        # warning is also changes hitbox
-        # Check horizontal collision
         if pygame.Rect.colliderect(DeltaHitBox, Object.rect):
             if self.hitBox.x < Object.rect.x:
                 distanceX = Object.rect.left - self.hitBox.right
@@ -188,6 +184,7 @@ class Player(SpriteEntity):
             damage = self.dealingDamage(enemy)
             if damage != 0:
                 if enemy.invincibleTimer <= 0:
+                    enemy.walking = False
                     enemy.health -= damage
                     enemy.updateActionState(enemy.actions['takeHit'])
                     enemy.invincibleTimer = enemy.invincibleFrame
@@ -199,7 +196,6 @@ class Player(SpriteEntity):
             self.frameIndex += 1
             if self.frameIndex + 1 > len(self.animationList[self.actionState]):
                 self.frameIndex = 0
-                # self.animationCycle += 1
 
                 # check if is attacking, if so, end after animation ended
                 if self.attacking or self.specialAttacking:
@@ -226,7 +222,7 @@ class Player(SpriteEntity):
 
 
     def update(self):
-        # note decrease special attack cool down
+        # decrease special attack cool down
         self.specialAttackCooldownTimer -= 1
 
         # update hitBox
