@@ -1,5 +1,4 @@
-import pygame
-from Settings import *
+from Library import *
 import csv
 
 class Ground:
@@ -13,9 +12,12 @@ class Ground:
         self.rect = self.spritesImage.get_rect()
         self.rect.topleft = [self.x, self.y]
 
-    def drawGround(self):
-        self.surface.blit(self.spritesImage, [self.x, self.y])
-        # pygame.draw.rect(self.surface, 'green', self.rect, 1)
+    def drawGround(self, x_modifier=0, y_modifier=0):
+        # sync rect x and y
+        self.rect.x = self.x
+        self.rect.y = self.y
+        self.surface.blit(self.spritesImage, [self.x + x_modifier, self.y + y_modifier])
+        pygame.draw.rect(self.surface, 'green', self.rect, 1)
         
 
 

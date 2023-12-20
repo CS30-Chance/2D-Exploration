@@ -22,8 +22,8 @@ class EnemyClass(SpriteEntity):
         }
 
 
-    def draw(self):
-        self.surface.blit(self.image, self.rect)
+    def draw(self, x_modifier=0, y_modifier=0):
+        self.surface.blit(self.image, [self.rect.x + x_modifier, self.rect.y + y_modifier, self.rect.w, self.rect.h])
 
         # self.surface.blit(self.maskImage, self.rect)
 
@@ -84,7 +84,7 @@ class FlyingEye(EnemyClass):
         pos = pygame.mouse.get_pos()
         self.rect.center = pos
 
-    def update(self):
+    def update(self, x_modifier=0, y_modifier=0):
 
         # update invincibleFrame
         self.invincibleTimer -= 1
@@ -104,7 +104,7 @@ class Skeleton(EnemyClass):
         self.health = 2
 
         # the range of movement
-        self.wayPoint = [[10 * TILE_SIZE, 11 * TILE_SIZE], [20 * TILE_SIZE, 11 * TILE_SIZE]]
+        self.wayPoint = [[16 * TILE_SIZE, 11 * TILE_SIZE], [24 * TILE_SIZE, 11 * TILE_SIZE]]
 
 
         self.IdleSpriteSheetPNG = pygame.image.load('Assets/Monster/Skeleton/Idle.png')
@@ -131,22 +131,24 @@ class Skeleton(EnemyClass):
         self.loadSpriteSheet()
 
     def move(self):
+        center = self.rect.center
         if self.walking:
             self.updateActionState(self.actions['walk'])
             self.rect.x += self.speed * self.direction
-            if self.rect.x <= self.wayPoint[0][0] or self.rect.x >= self.wayPoint[1][0]:
+            if center[0] + self.speed * self.direction < self.wayPoint[0][0] or \
+                    center[0] + self.speed * self.direction > self.wayPoint[1][0]:
                 self.direction *= -1
                 self.flip = not self.flip
 
 
-    def update(self):
+    def update(self, x_modifier=0, y_modifier=0):
         # update invincibleFrame
         self.invincibleTimer -= 1
 
         self.move()
         self.updateMask()
         self.updateAnimationFrame()
-        self.draw()
+        self.draw(x_modifier, y_modifier)
 
 
 

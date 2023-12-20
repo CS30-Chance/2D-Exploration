@@ -2,10 +2,14 @@ import pygame
 from Settings import *
 
 
-def drawBackground(surface, color):
+
+def drawBackground(surface, color, backgrounds, scrollValue=0):
     """Fill Background (TEST USE !!!)"""
 
     surface.fill(color)
+    for index, i in enumerate(backgrounds):
+        pic = pygame.transform.scale(i, (WINDOW_WIDTH, WINDOW_HEIGHT))
+        surface.blit(pic, (0 + index * scrollValue, 0))
     return None
 
 

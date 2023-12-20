@@ -9,8 +9,8 @@ class Player(SpriteEntity):
         self.health = self.maxHealth
         self.speed = Speed
 
-        self.WorldObjects = None
-        self.enemyList = []
+        # self.WorldObjects = None
+        # self.enemyList = []
 
         # self.animationCoolDown = 1000
 
@@ -31,6 +31,9 @@ class Player(SpriteEntity):
         self.hitBoxHeight = 70
         self.hitBox = pygame.rect.Rect([self.position[0], self.position[1], self.hitBoxWidth, self.hitBoxHeight])
 
+        # screen scroll
+        self.x_shift = 0
+        self.y_shift = 0
 
         self.spriteSheetPNG = pygame.image.load('Assets/fire_knight/spritesheets/SpriteSheet2.png')
 
@@ -85,6 +88,14 @@ class Player(SpriteEntity):
             'death': 8,
         }
 
+    @property
+    def WorldObjects(self):
+        return Tiles
+
+    @property
+    def enemyList(self):
+        return Enemy
+
     def move(self):
         dx = 0
         dy = 0
@@ -112,18 +123,36 @@ class Player(SpriteEntity):
 
         dy += self.y_velocity
 
-        # note Can't move when attack
+        #  Can't move when attacking
         if self.attacking or self.specialAttacking:
             dx = 0
             dy = 0
 
-
         for element in self.WorldObjects:
             dx, dy = self.collisionDetection(element, dx, dy)
 
-
         self.rect.x += dx
         self.rect.y += dy
+
+        self.x_shift, self.y_shift = self.getWorldShift()
+
+    def getWorldShift(self):
+        playerHCenter = self.hitBox[0] + self.hitBox.w / 2
+        playerVCenter = self.hitBox[1] + self.hitBox.h / 2
+        windowHCenter = WINDOW_WIDTH / 2
+        windowVCenter = WINDOW_HEIGHT / 2
+
+        # x shift
+        xShift = windowHCenter - playerHCenter
+        xShift = min(0, xShift)  # limit left
+        xShift = max(xShift, WINDOW_WIDTH - LEVEL_WIDTH)  # limit right
+
+        # y shift
+        yShift = windowVCenter - playerVCenter
+        yShift = min(0, yShift)  # limit top
+        yShift = max(yShift, WINDOW_HEIGHT - LEVEL_HEIGHT)  # limit bottom
+
+        return xShift, yShift
 
     def collisionDetection(self, Object, dx, dy):
         distanceX = dx
@@ -150,9 +179,7 @@ class Player(SpriteEntity):
                 self.y_velocity = 0  # reset y velocity d
                 distanceY = Object.rect.bottom - self.hitBox.top
 
-
         return distanceX, distanceY
-
 
     def updateAction(self):
         if self.inAir:
@@ -206,10 +233,11 @@ class Player(SpriteEntity):
         # flip sprite when needed
         self.image = pygame.transform.flip(self.image, self.flip, False)
 
-
     def draw(self):
         # draw image to screen
-        self.surface.blit(self.image, self.rect)
+        # warning player shift
+        self.surface.blit(self.image,
+                          [self.rect.x + self.x_shift, self.rect.y + self.y_shift, self.rect.width, self.rect.height])
 
         # draw mask
         # self.surface.blit(self.maskImage, (self.rect.x, self.rect.y))
@@ -219,7 +247,6 @@ class Player(SpriteEntity):
 
         # draw hitBox
         pygame.draw.rect(self.surface, BLUE, self.hitBox, 1)
-
 
     def update(self):
         # decrease special attack cool down
