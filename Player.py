@@ -243,10 +243,10 @@ class Player(SpriteEntity):
         # self.surface.blit(self.maskImage, (self.rect.x, self.rect.y))
 
         # draw rect box
-        pygame.draw.rect(self.surface, GREEN, self.rect, 1)
+        # pygame.draw.rect(self.surface, GREEN, self.rect, 1)
 
         # draw hitBox
-        pygame.draw.rect(self.surface, BLUE, self.hitBox, 1)
+        # pygame.draw.rect(self.surface, BLUE, self.hitBox, 1)
 
     def update(self):
         # decrease special attack cool down

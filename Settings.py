@@ -1,5 +1,4 @@
 # General Game Settings
-import pygame.image
 
 WINDOW_WIDTH = 960
 WINDOW_HEIGHT = 540
@@ -18,7 +17,7 @@ BLUE = (0, 0, 255)
 # World Settings
 TILE_SIZE = 35
 # todo change level width/length base on tileMap.csv
-LEVEL_WIDTH = 47 * TILE_SIZE
+LEVEL_WIDTH = 140 * TILE_SIZE
 LEVEL_HEIGHT = 31 * TILE_SIZE
 
 GRAVITY = 0.8

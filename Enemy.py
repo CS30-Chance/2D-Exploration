@@ -27,7 +27,7 @@ class EnemyClass(SpriteEntity):
 
         # self.surface.blit(self.maskImage, self.rect)
 
-        pygame.draw.rect(self.surface, RED, self.rect, 1)
+        # pygame.draw.rect(self.surface, RED, self.rect, 1)
 
 
     def updateAnimationFrame(self):
@@ -59,6 +59,7 @@ class FlyingEye(EnemyClass):
         EnemyClass.__init__(self, surface, position, speed)
 
         self.animationScale = 1
+        self.wayPoint = [[20 * TILE_SIZE, 20 * TILE_SIZE], [35 * TILE_SIZE, 20 * TILE_SIZE]]
 
         self.health = 70
 
@@ -81,8 +82,14 @@ class FlyingEye(EnemyClass):
         self.loadSpriteSheet()
 
     def move(self):
-        pos = pygame.mouse.get_pos()
-        self.rect.center = pos
+        center = self.rect.center
+        if self.walking:
+            self.updateActionState(self.actions['idle'])
+            self.rect.x += self.speed * self.direction
+            if center[0] + self.speed * self.direction < self.wayPoint[0][0] or \
+                    center[0] + self.speed * self.direction > self.wayPoint[1][0]:
+                self.direction *= -1
+                self.flip = not self.flip
 
     def update(self, x_modifier=0, y_modifier=0):
 
@@ -92,7 +99,7 @@ class FlyingEye(EnemyClass):
         self.move()
         self.updateMask()
         self.updateAnimationFrame()
-        self.draw()
+        self.draw(x_modifier, y_modifier)
 
 
 

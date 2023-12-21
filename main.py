@@ -1,16 +1,30 @@
-from World import *
+import pygame
+from Settings import *
+from Library import drawBackground
+from World import World
 from Player import Player
-from Enemy import *
+from Enemy import FlyingEye, Skeleton
 
 # Game initialization
 pygame.init()
 CLOCK = pygame.time.Clock()
 SCREEN = pygame.display.set_mode([WINDOW_WIDTH, WINDOW_HEIGHT])
 # backgrounds
-bg1 = pygame.image.load('Assets/Platformer - desert/Background/BG-sky.png').convert_alpha()
-bg2 = pygame.image.load('Assets/Platformer - desert/Background/BG-sun.png').convert_alpha()
-bg3 = pygame.image.load('Assets/Platformer - desert/Background/BG-mountains.png').convert_alpha()
-bg4 = pygame.image.load('Assets/Platformer - desert/Background/BG-ruins.png').convert_alpha()
+Background = []
+# load all background layers
+for b in range(11):
+    pic = pygame.image.load(f'Assets/Free Pixel Art Forest/PNG/Background layers/{b}.png').convert_alpha()
+    Background.append(pic)
+
+# create world
+world = World(SCREEN)
+
+# LEVEL_HEIGHT = len(world.tilesList) * TILE_SIZE
+# LEVEL_WIDTH = len(world.tilesList[0]) * TILE_SIZE
+# print(LEVEL_HEIGHT, LEVEL_WIDTH)
+GroundTiles = world.buildGround()
+Tiles.extend(GroundTiles)
+
 
 # screen scrolling value
 scroll = 0
@@ -18,17 +32,12 @@ scrollLeft = False
 scrollRight = False
 
 
-player = Player(SCREEN, [2, 5], 7)
-enemy_flying_eye = FlyingEye(SCREEN, [7, 7], 5)
+player = Player(SCREEN, [2, 22], 7)
+enemy_flying_eye = FlyingEye(SCREEN, [25, 20], 3)
 enemy_skeleton = Skeleton(SCREEN, [17, 11], 2)
 
 
-
-# create world
-world = World(SCREEN)
-GroundTiles = world.buildGround()
-Tiles.extend(GroundTiles)
-
+# create enemies
 Enemy.append(enemy_flying_eye)
 Enemy.append(enemy_skeleton)
 
@@ -39,7 +48,9 @@ while RUN:
     CLOCK.tick(FPS)
 
     # Draw Background
-    drawBackground(SCREEN, GREY, [bg1, bg3, bg4], scrollValue=scroll)
+    drawBackground(SCREEN, GREY, Background,
+                   H_scrollValue=player.x_shift * 0.01,
+                   V_scrollValue=player.y_shift * 0.005)
 
     # Draw Ground
     for ground in GroundTiles:
@@ -47,6 +58,7 @@ while RUN:
 
     # update player/enemy
     player.update()
+    # print(player.x_shift, player.y_shift)
 
     for index, e in enumerate(Enemy):
         # note enemy shift
@@ -64,10 +76,8 @@ while RUN:
 
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_a:
-                # scrollRight = True
                 player.moveLeft = True
             if event.key == pygame.K_d:
-                # scrollLeft = True
                 player.moveRight = True
             if event.key == pygame.K_f:
                 if player.specialAttackCooldownTimer <= 0:
@@ -84,10 +94,8 @@ while RUN:
 
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_a:
-                # scrollRight = False
                 player.moveLeft = False
             if event.key == pygame.K_d:
-                # scrollLeft = False
                 player.moveRight = False
 
 

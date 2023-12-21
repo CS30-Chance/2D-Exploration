@@ -17,18 +17,19 @@ class Ground:
         self.rect.x = self.x
         self.rect.y = self.y
         self.surface.blit(self.spritesImage, [self.x + x_modifier, self.y + y_modifier])
-        pygame.draw.rect(self.surface, 'green', self.rect, 1)
+        # pygame.draw.rect(self.surface, 'green', self.rect, 1)
         
 
 
 class World:
     def __init__(self, surface):
-        # todo use tile-map csv to load world
         self.tileMapFile = 'TileMap.csv'
         self.surface = surface
         self.tileMap = csv.reader(open(self.tileMapFile, 'r'))
         self.tilesList = []
         self.groundTiles = []
+        self.levelHeight = None
+        self.levelWidth = None
 
         # load tiles into list
         for y_Pos, r in enumerate(self.tileMap):
@@ -41,6 +42,10 @@ class World:
                     self.groundTiles.append([x_Pos, y_Pos])
 
             self.tilesList.append(temp)
+
+        # calculate level width and height
+        self.levelHeight = len(self.tilesList) * TILE_SIZE
+        self.levelWidth = len(self.tilesList[0]) * TILE_SIZE
 
     def buildGround(self):
         ground = []

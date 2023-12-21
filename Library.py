@@ -3,13 +3,15 @@ from Settings import *
 
 
 
-def drawBackground(surface, color, backgrounds, scrollValue=0):
+def drawBackground(surface, color, backgrounds, H_scrollValue=0, V_scrollValue=0):
     """Fill Background (TEST USE !!!)"""
 
     surface.fill(color)
     for index, i in enumerate(backgrounds):
-        pic = pygame.transform.scale(i, (WINDOW_WIDTH, WINDOW_HEIGHT))
-        surface.blit(pic, (0 + index * scrollValue, 0))
+        pic = pygame.transform.scale(i, (WINDOW_WIDTH*1.5, WINDOW_HEIGHT*1.5))
+        # warning change v-scroll modifier(2.725) so background start at bottom
+        surface.blit(pic, (0 + index * H_scrollValue,
+                           -pic.get_height()/3 + index * V_scrollValue * 0.2))
     return None
 
 
