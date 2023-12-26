@@ -2,16 +2,15 @@ import pygame
 from Settings import *
 
 
-
 def drawBackground(surface, color, backgrounds, H_scrollValue=0, V_scrollValue=0):
     """Fill Background (TEST USE !!!)"""
 
     surface.fill(color)
     for index, i in enumerate(backgrounds):
-        pic = pygame.transform.scale(i, (WINDOW_WIDTH*1.5, WINDOW_HEIGHT*1.5))
+        pic = pygame.transform.scale(i, (WINDOW_WIDTH * 1.5, WINDOW_HEIGHT * 1.5))
         # warning change v-scroll modifier(2.725) so background start at bottom
         surface.blit(pic, (0 + index * H_scrollValue,
-                           -pic.get_height()/3 + index * V_scrollValue * 0.2))
+                           -pic.get_height() / 3 + index * V_scrollValue * 0.2))
     return None
 
 
@@ -55,7 +54,6 @@ class SpriteEntity(pygame.sprite.Sprite):
         self.flip = False
         self.actionState = 0
 
-
         self.position = [position[0] * TILE_SIZE, position[1] * TILE_SIZE]
         self.direction = 1
         self.moveRight = False
@@ -95,3 +93,40 @@ class SpriteEntity(pygame.sprite.Sprite):
         if self.actionState != newState:
             self.frameIndex = 0
             self.actionState = newState
+
+
+class HealthBar:
+    def __init__(self, Entity, rect):
+        self.entity = Entity
+        self.surface = self.entity.surface
+
+        self.outlineColor = BLACK
+        self.baseColor = RED
+        self.lineWidth = 3
+        self.rect = pygame.rect.Rect(rect)
+
+        self.heartImg = pygame.image.load('Assets/heart.png').convert_alpha()
+        self.heartImg = pygame.transform.scale_by(self.heartImg, [3, 3])
+        self.heartImg.set_colorkey(WHITE)
+        self.heartRect = self.heartImg.get_rect()
+
+        # self.healthBarImg = pygame.transform.scale_by(self.healthBarImg, [self.scale, self.scale])
+
+    def drawBase(self):
+        width = self.rect.w
+        widthModifier = self.entity.health / self.entity.maxHealth
+        width *= widthModifier
+        pygame.draw.rect(self.entity.surface, self.baseColor, [self.rect.x, self.rect.y, width, self.rect.h])
+
+    def drawOutline(self):
+        pygame.draw.rect(self.entity.surface, self.outlineColor, self.rect, self.lineWidth)
+
+    def drawHeart(self):
+        self.heartRect.center = [self.rect.x, self.rect.centery]
+
+        self.surface.blit(self.heartImg, self.heartRect)
+
+    def draw(self):
+        self.drawBase()
+        self.drawOutline()
+        self.drawHeart()

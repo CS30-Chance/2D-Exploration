@@ -17,7 +17,7 @@ class Ground:
         self.rect.x = self.x
         self.rect.y = self.y
         self.surface.blit(self.spritesImage, [self.x + x_modifier, self.y + y_modifier])
-        # pygame.draw.rect(self.surface, 'green', self.rect, 1)
+        pygame.draw.rect(self.surface, 'green', self.rect, 1)
         
 
 

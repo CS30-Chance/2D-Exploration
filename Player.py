@@ -1,3 +1,5 @@
+import pygame.draw
+
 from Library import *
 
 
@@ -123,16 +125,15 @@ class Player(SpriteEntity):
 
         dy += self.y_velocity
 
-        #  Can't move when attacking
-        if self.attacking or self.specialAttacking:
-            dx = 0
-            dy = 0
 
+        self.inAir = True
         for element in self.WorldObjects:
             dx, dy = self.collisionDetection(element, dx, dy)
 
-        self.rect.x += dx
-        self.rect.y += dy
+        #  Can't move when attacking
+        if not self.attacking and not self.specialAttacking:
+            self.rect.x += dx
+            self.rect.y += dy
 
         self.x_shift, self.y_shift = self.getWorldShift()
 
@@ -158,9 +159,11 @@ class Player(SpriteEntity):
         distanceX = dx
         distanceY = dy
 
+
         # dx section
         DeltaHitBox = pygame.Rect(self.hitBox)
         DeltaHitBox.x += dx
+        # pygame.draw.rect(self.surface, BLUE, DeltaHitBox)
         if pygame.Rect.colliderect(DeltaHitBox, Object.rect):
             if self.hitBox.x < Object.rect.x:
                 distanceX = Object.rect.left - self.hitBox.right
@@ -171,13 +174,17 @@ class Player(SpriteEntity):
         DeltaHitBox = pygame.Rect(self.hitBox)
         DeltaHitBox.y += dy
         # Check vertical collision
+        # pygame.draw.rect(self.surface, RED, DeltaHitBox)
         if pygame.Rect.colliderect(DeltaHitBox, Object.rect):
             if self.hitBox.y < Object.rect.y:
                 self.inAir = False  # landed
                 distanceY = Object.rect.top - self.hitBox.bottom
-            elif self.hitBox.y > Object.rect.y:
+
+            if self.hitBox.y > Object.rect.y:
                 self.y_velocity = 0  # reset y velocity d
                 distanceY = Object.rect.bottom - self.hitBox.top
+
+        # pygame.draw.rect(self.surface, WHITE, self.hitBox)
 
         return distanceX, distanceY
 
@@ -243,10 +250,10 @@ class Player(SpriteEntity):
         # self.surface.blit(self.maskImage, (self.rect.x, self.rect.y))
 
         # draw rect box
-        # pygame.draw.rect(self.surface, GREEN, self.rect, 1)
+        pygame.draw.rect(self.surface, GREEN, self.rect, 1)
 
         # draw hitBox
-        # pygame.draw.rect(self.surface, BLUE, self.hitBox, 1)
+        pygame.draw.rect(self.surface, BLUE, self.hitBox, 1)
 
     def update(self):
         # decrease special attack cool down
@@ -255,6 +262,7 @@ class Player(SpriteEntity):
         # update hitBox
         self.hitBox.bottom = self.rect.bottom
         self.hitBox.centerx = self.rect.centerx
+
 
         self.updateAction()
         self.updateMask()

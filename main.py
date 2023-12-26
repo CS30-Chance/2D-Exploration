@@ -1,6 +1,6 @@
 import pygame
 from Settings import *
-from Library import drawBackground
+from Library import drawBackground, HealthBar
 from World import World
 from Player import Player
 from Enemy import FlyingEye, Skeleton
@@ -36,6 +36,9 @@ player = Player(SCREEN, [2, 22], 7)
 enemy_flying_eye = FlyingEye(SCREEN, [25, 20], 3)
 enemy_skeleton = Skeleton(SCREEN, [17, 11], 2)
 
+# create health bar
+playerHealthBar = HealthBar(player, [30, 20, 200, 30])
+
 
 # create enemies
 Enemy.append(enemy_flying_eye)
@@ -58,16 +61,17 @@ while RUN:
 
     # update player/enemy
     player.update()
-    # print(player.x_shift, player.y_shift)
 
     for index, e in enumerate(Enemy):
         # note enemy shift
         e.update(x_modifier=player.x_shift, y_modifier=player.y_shift)
-
         # kill enemy
         if not e.alive:
             Enemy.pop(index)
 
+
+    # UI
+    playerHealthBar.draw()
 
     # Event Handler
     for event in pygame.event.get():
@@ -97,7 +101,6 @@ while RUN:
                 player.moveLeft = False
             if event.key == pygame.K_d:
                 player.moveRight = False
-
 
     # Update game window
     pygame.display.update()

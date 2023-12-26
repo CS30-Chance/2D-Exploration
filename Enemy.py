@@ -3,15 +3,13 @@ from Library import *
 class EnemyClass(SpriteEntity):
     def __init__(self, surface, position: [int, int], speed):
         SpriteEntity.__init__(self, surface, position)
-
-
         self.alive = True
         self.invincibleFrame = InvincibleFrame
         self.invincibleTimer = self.invincibleFrame
 
         self.speed = speed
+        self.maxHealth = None
         self.health = None
-
         self.walking = True
 
         self.actions = {
@@ -21,13 +19,12 @@ class EnemyClass(SpriteEntity):
             'walk': 3,
         }
 
-
     def draw(self, x_modifier=0, y_modifier=0):
         self.surface.blit(self.image, [self.rect.x + x_modifier, self.rect.y + y_modifier, self.rect.w, self.rect.h])
 
         # self.surface.blit(self.maskImage, self.rect)
 
-        # pygame.draw.rect(self.surface, RED, self.rect, 1)
+        pygame.draw.rect(self.surface, RED, self.rect, 1)
 
 
     def updateAnimationFrame(self):
@@ -61,7 +58,8 @@ class FlyingEye(EnemyClass):
         self.animationScale = 1
         self.wayPoint = [[20 * TILE_SIZE, 20 * TILE_SIZE], [35 * TILE_SIZE, 20 * TILE_SIZE]]
 
-        self.health = 70
+        self.maxHealth = 70
+        self.health = self.maxHealth
 
         self.flightSpriteSheetPNG = pygame.image.load('Assets/Monster/Flying eye/Flight.png')
         self.takeHitSpriteSheetPNG = pygame.image.load('Assets/Monster/Flying eye/Take Hit.png')
@@ -108,7 +106,9 @@ class Skeleton(EnemyClass):
         EnemyClass.__init__(self, surface, position, speed)
 
         self.animationScale = 1.5
-        self.health = 2
+
+        self.maxHealth = 2
+        self.health = self.maxHealth
 
         # the range of movement
         self.wayPoint = [[16 * TILE_SIZE, 11 * TILE_SIZE], [24 * TILE_SIZE, 11 * TILE_SIZE]]
