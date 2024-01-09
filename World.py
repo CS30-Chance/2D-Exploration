@@ -1,5 +1,8 @@
 from Library import *
+from Player import Player
+from Enemy import FlyingEye, Skeleton
 import csv
+from gameFile import player_, enemy_
 
 class Ground:
     def __init__(self, surface, x, y):
@@ -17,7 +20,7 @@ class Ground:
         self.rect.x = self.x
         self.rect.y = self.y
         self.surface.blit(self.spritesImage, [self.x + x_modifier, self.y + y_modifier])
-        pygame.draw.rect(self.surface, 'green', self.rect, 1)
+        # pygame.draw.rect(self.surface, 'green', self.rect, 1)
         
 
 
@@ -30,6 +33,9 @@ class World:
         self.groundTiles = []
         self.levelHeight = None
         self.levelWidth = None
+
+        self.playerInfo = player_
+        self.enemyInfo = enemy_
 
         # load tiles into list
         for y_Pos, r in enumerate(self.tileMap):
@@ -53,5 +59,27 @@ class World:
             tempGround = Ground(self.surface, cord[0], cord[1])
             ground.append(tempGround)
         return ground
+
+
+    def loadPlayer(self, Surface):
+        playerPos = self.playerInfo[0]['position']
+        playerSpeed = self.playerInfo[0]['speed']
+        return Player(Surface, playerPos, playerSpeed)
+
+    def loadEnemy(self, Surface):
+        enemyList = []
+        for e in self.enemyInfo:
+            enemyType = e['type']
+            enemyPos = e['position']
+            enemySpeed = e['speed']
+            enemyRange = e['moveRange']
+
+            if enemyType == 'f':
+                enemy = FlyingEye(Surface, enemyPos, enemySpeed, enemyRange)
+            else:
+                enemy = Skeleton(Surface, enemyPos, enemySpeed, enemyRange)
+
+            enemyList.append(enemy)
+        return enemyList
 
 

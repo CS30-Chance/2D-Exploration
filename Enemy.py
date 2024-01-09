@@ -1,11 +1,13 @@
 from Library import *
 
 class EnemyClass(SpriteEntity):
-    def __init__(self, surface, position: [int, int], speed):
+    def __init__(self, surface, position: [int, int], speed, movementRange: [int, int]):
         SpriteEntity.__init__(self, surface, position)
         self.alive = True
         self.invincibleFrame = InvincibleFrame
         self.invincibleTimer = self.invincibleFrame
+
+        self.wayPoint = [movementRange[0] * TILE_SIZE, movementRange[1] * TILE_SIZE]
 
         self.speed = speed
         self.maxHealth = None
@@ -24,6 +26,7 @@ class EnemyClass(SpriteEntity):
 
         # self.surface.blit(self.maskImage, self.rect)
 
+        # draw hit box
         pygame.draw.rect(self.surface, RED, self.rect, 1)
 
 
@@ -52,11 +55,10 @@ class EnemyClass(SpriteEntity):
 
 
 class FlyingEye(EnemyClass):
-    def __init__(self, surface, position: [int, int], speed):
-        EnemyClass.__init__(self, surface, position, speed)
+    def __init__(self, surface, position: [int, int], speed, movementRange):
+        EnemyClass.__init__(self, surface, position, speed, movementRange)
 
         self.animationScale = 1
-        self.wayPoint = [[20 * TILE_SIZE, 20 * TILE_SIZE], [35 * TILE_SIZE, 20 * TILE_SIZE]]
 
         self.maxHealth = 70
         self.health = self.maxHealth
@@ -84,8 +86,8 @@ class FlyingEye(EnemyClass):
         if self.walking:
             self.updateActionState(self.actions['idle'])
             self.rect.x += self.speed * self.direction
-            if center[0] + self.speed * self.direction < self.wayPoint[0][0] or \
-                    center[0] + self.speed * self.direction > self.wayPoint[1][0]:
+            if center[0] + self.speed * self.direction < self.wayPoint[0] or \
+                    center[0] + self.speed * self.direction > self.wayPoint[1]:
                 self.direction *= -1
                 self.flip = not self.flip
 
@@ -102,16 +104,13 @@ class FlyingEye(EnemyClass):
 
 
 class Skeleton(EnemyClass):
-    def __init__(self, surface, position: [int, int], speed):
-        EnemyClass.__init__(self, surface, position, speed)
+    def __init__(self, surface, position: [int, int], speed, movementRange):
+        EnemyClass.__init__(self, surface, position, speed, movementRange)
 
         self.animationScale = 1.5
 
         self.maxHealth = 2
         self.health = self.maxHealth
-
-        # the range of movement
-        self.wayPoint = [[16 * TILE_SIZE, 11 * TILE_SIZE], [24 * TILE_SIZE, 11 * TILE_SIZE]]
 
 
         self.IdleSpriteSheetPNG = pygame.image.load('Assets/Monster/Skeleton/Idle.png')
@@ -142,8 +141,8 @@ class Skeleton(EnemyClass):
         if self.walking:
             self.updateActionState(self.actions['walk'])
             self.rect.x += self.speed * self.direction
-            if center[0] + self.speed * self.direction < self.wayPoint[0][0] or \
-                    center[0] + self.speed * self.direction > self.wayPoint[1][0]:
+            if center[0] + self.speed * self.direction < self.wayPoint[0] or \
+                    center[0] + self.speed * self.direction > self.wayPoint[1]:
                 self.direction *= -1
                 self.flip = not self.flip
 

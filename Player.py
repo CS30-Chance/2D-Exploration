@@ -97,6 +97,7 @@ class Player(SpriteEntity):
     @property
     def enemyList(self):
         return Enemy
+    # warning property not sync
 
     def move(self):
         dx = 0
@@ -250,7 +251,7 @@ class Player(SpriteEntity):
         # self.surface.blit(self.maskImage, (self.rect.x, self.rect.y))
 
         # draw rect box
-        pygame.draw.rect(self.surface, GREEN, self.rect, 1)
+        # pygame.draw.rect(self.surface, GREEN, self.rect, 1)
 
         # draw hitBox
         pygame.draw.rect(self.surface, BLUE, self.hitBox, 1)
