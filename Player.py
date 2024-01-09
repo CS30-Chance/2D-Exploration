@@ -1,7 +1,6 @@
-import pygame.draw
-
-from Library import *
-
+from Library import SpriteEntity, loadSprite
+from Library import BLACK, Tiles, GRAVITY, WINDOW_WIDTH, WINDOW_HEIGHT, LEVEL_WIDTH, LEVEL_HEIGHT, BLUE
+from Library import pygame
 
 class Player(SpriteEntity):
     def __init__(self, Surface, Position: [int, int], Speed):
@@ -90,14 +89,8 @@ class Player(SpriteEntity):
             'death': 8,
         }
 
-    @property
-    def WorldObjects(self):
-        return Tiles
-
-    @property
-    def enemyList(self):
-        return Enemy
-    # warning property not sync
+        self.enemyList = []
+        self.WorldObjects = Tiles
 
     def move(self):
         dx = 0
@@ -271,3 +264,4 @@ class Player(SpriteEntity):
         self.attack(self.enemyList)
         self.move()
         self.draw()
+

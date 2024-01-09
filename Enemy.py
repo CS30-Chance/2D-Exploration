@@ -1,4 +1,6 @@
-from Library import *
+from Library import SpriteEntity, loadSprite, BLACK, RED
+from Library import InvincibleFrame, TILE_SIZE
+from Library import pygame
 
 class EnemyClass(SpriteEntity):
     def __init__(self, surface, position: [int, int], speed, movementRange: [int, int]):

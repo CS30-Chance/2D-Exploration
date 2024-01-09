@@ -1,9 +1,7 @@
-import pygame
-from Settings import *
-from Library import drawBackground, HealthBar
+from World import pygame
+from World import WINDOW_WIDTH, WINDOW_HEIGHT, Tiles, FPS, GREY
+from World import drawBackground, HealthBar
 from World import World
-# from Player import Player
-from Enemy import FlyingEye, Skeleton
 
 # Game initialization
 pygame.init()
@@ -32,22 +30,13 @@ scrollLeft = False
 scrollRight = False
 
 
-# player = Player(SCREEN, [2, 22], 7)
 player = world.loadPlayer(SCREEN)
-enemy_flying_eye = FlyingEye(SCREEN, [25, 20], 3, [20, 35])
-enemy_skeleton = Skeleton(SCREEN, [17, 11], 2, [16, 24])
-
 # create health bar
 playerHealthBar = HealthBar(player, [30, 20, 200, 30])
 
-
 # create enemies
-# Enemy.append(enemy_flying_eye)
-# Enemy.append(enemy_skeleton)
 Enemy = world.loadEnemy(SCREEN)
 
-# print(world.loadEnemy(SCREEN))
-# print(Enemy)
 
 # Game running area
 RUN = True
@@ -55,7 +44,8 @@ while RUN:
     # Set game FPS
     CLOCK.tick(FPS)
 
-    # print(Enemy)
+    # note print test area
+    # print('player access point', id(player.enemyList))
 
     # Draw Background
     drawBackground(SCREEN, GREY, Background,
@@ -66,8 +56,9 @@ while RUN:
     for ground in GroundTiles:
         ground.drawGround(x_modifier=player.x_shift, y_modifier=player.y_shift)
 
-    # update player/enemy
+    # update player and player enemyList
     player.update()
+    player.enemyList = Enemy
 
     for index, e in enumerate(Enemy):
         # note enemy shift

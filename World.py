@@ -1,8 +1,7 @@
 from Library import *
-from Player import Player
 from Enemy import FlyingEye, Skeleton
-import csv
-from gameFile import player_, enemy_
+from Player import Player
+
 
 class Ground:
     def __init__(self, surface, x, y):
