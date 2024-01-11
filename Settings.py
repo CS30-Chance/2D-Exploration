@@ -28,3 +28,6 @@ Tiles = []
 
 # global enemy list
 Enemy = []
+
+# load character from gameFile.json
+gameINFO = open('gameFile.json')

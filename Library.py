@@ -1,8 +1,7 @@
 import pygame
 import csv
+import json
 from Settings import *
-from gameFile import *
-
 
 
 def drawBackground(surface, color, backgrounds, H_scrollValue=0, V_scrollValue=0):
@@ -11,7 +10,6 @@ def drawBackground(surface, color, backgrounds, H_scrollValue=0, V_scrollValue=0
     surface.fill(color)
     for index, i in enumerate(backgrounds):
         pic = pygame.transform.scale(i, (WINDOW_WIDTH * 1.5, WINDOW_HEIGHT * 1.5))
-        # warning change v-scroll modifier(2.725) so background start at bottom
         surface.blit(pic, (0 + index * H_scrollValue,
                            -pic.get_height() / 3 + index * V_scrollValue * 0.2))
     return None
@@ -43,6 +41,32 @@ def loadSprite(file, width: int, height: int, frameCount: int, scale, colorKey=N
         sprite.append(frame)
     return sprite
 
+
+def saveEntity(player, enemyList):
+    """Save player as JSON"""
+    playerInfo = {
+        'position': [player.rect.center[0]/TILE_SIZE,
+                     player.rect.center[1]/TILE_SIZE],
+        'speed': player.speed,
+    }
+
+    enemyInfo = []
+    for e in enemyList:
+        temp = {
+            'type': e.type,
+            'position': [e.rect.center[0]/TILE_SIZE,
+                         e.rect.center[1]/TILE_SIZE],
+            'speed': e.speed,
+            'moveRange': [e.wayPoint[0]/TILE_SIZE,
+                          e.wayPoint[1]/TILE_SIZE]
+
+        }
+        enemyInfo.append(temp)
+
+    Dict = {'player': playerInfo,
+            'enemy': enemyInfo}
+
+    return Dict
 
 class SpriteEntity(pygame.sprite.Sprite):
     def __init__(self, surface, position: [int, int]):

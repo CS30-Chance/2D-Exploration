@@ -1,6 +1,6 @@
-from World import pygame
+from World import pygame, json
 from World import WINDOW_WIDTH, WINDOW_HEIGHT, Tiles, FPS, GREY
-from World import drawBackground, HealthBar
+from World import drawBackground, HealthBar, saveEntity
 from World import World
 
 # Game initialization
@@ -74,6 +74,9 @@ while RUN:
     # Event Handler
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
+            gameInfo = saveEntity(player, Enemy)
+            with open('gameFile.json', 'w') as JsonFile:
+                json.dump(gameInfo, JsonFile, ensure_ascii=False, indent=4)
             RUN = False
 
         if event.type == pygame.KEYDOWN:

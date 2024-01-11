@@ -64,6 +64,7 @@ class FlyingEye(EnemyClass):
 
         self.maxHealth = 70
         self.health = self.maxHealth
+        self.type = 'f'
 
         self.flightSpriteSheetPNG = pygame.image.load('Assets/Monster/Flying eye/Flight.png')
         self.takeHitSpriteSheetPNG = pygame.image.load('Assets/Monster/Flying eye/Take Hit.png')
@@ -113,6 +114,7 @@ class Skeleton(EnemyClass):
 
         self.maxHealth = 2
         self.health = self.maxHealth
+        self.type = 's'
 
 
         self.IdleSpriteSheetPNG = pygame.image.load('Assets/Monster/Skeleton/Idle.png')

@@ -20,7 +20,7 @@ class Ground:
         self.rect.y = self.y
         self.surface.blit(self.spritesImage, [self.x + x_modifier, self.y + y_modifier])
         # pygame.draw.rect(self.surface, 'green', self.rect, 1)
-        
+
 
 
 class World:
@@ -33,8 +33,9 @@ class World:
         self.levelHeight = None
         self.levelWidth = None
 
-        self.playerInfo = player_
-        self.enemyInfo = enemy_
+        self.gameCharacterInfo = json.load(gameINFO)
+        self.playerInfo = self.gameCharacterInfo['player']
+        self.enemyInfo = self.gameCharacterInfo['enemy']
 
         # load tiles into list
         for y_Pos, r in enumerate(self.tileMap):
@@ -61,8 +62,8 @@ class World:
 
 
     def loadPlayer(self, Surface):
-        playerPos = self.playerInfo[0]['position']
-        playerSpeed = self.playerInfo[0]['speed']
+        playerPos = self.playerInfo['position']
+        playerSpeed = self.playerInfo['speed']
         return Player(Surface, playerPos, playerSpeed)
 
     def loadEnemy(self, Surface):
