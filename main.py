@@ -1,6 +1,6 @@
 from World import pygame, json
-from World import WINDOW_WIDTH, WINDOW_HEIGHT, Tiles, FPS, GREY
-from World import drawBackground, HealthBar, saveEntity
+from World import WINDOW_WIDTH, WINDOW_HEIGHT, Tiles, FPS
+from World import drawBackground, HealthBar, saveEntity, writeText, WHITE
 from World import World
 
 # Game initialization
@@ -11,7 +11,7 @@ SCREEN = pygame.display.set_mode([WINDOW_WIDTH, WINDOW_HEIGHT])
 Background = []
 # load all background layers
 for b in range(11):
-    pic = pygame.image.load(f'Assets/Free Pixel Art Forest/PNG/Background layers/{b}.png').convert_alpha()
+    pic = pygame.image.load(f'Assets/Background layers/{b}.png').convert_alpha()
     Background.append(pic)
 
 # create world
@@ -33,6 +33,7 @@ scrollRight = False
 player = world.loadPlayer(SCREEN)
 # create health bar
 playerHealthBar = HealthBar(player, [30, 20, 200, 30])
+playerExp = writeText(str(player.EXP), [900, 40], WHITE)
 
 # create enemies
 Enemy = world.loadEnemy(SCREEN)
@@ -46,9 +47,10 @@ while RUN:
 
     # note print test area
     # print('player access point', id(player.enemyList))
+    # print(player.EXP)
 
     # Draw Background
-    drawBackground(SCREEN, GREY, Background,
+    drawBackground(SCREEN, Background,
                    H_scrollValue=player.x_shift * 0.01,
                    V_scrollValue=player.y_shift * 0.005)
 
@@ -65,11 +67,15 @@ while RUN:
         e.update(x_modifier=player.x_shift, y_modifier=player.y_shift)
         # kill enemy
         if not e.alive:
+            # gain EXP
+            player.EXP += e.EXP
             Enemy.pop(index)
 
 
     # UI
     playerHealthBar.draw()
+    playerExp = writeText(str(player.EXP), [900, 40], WHITE)
+    SCREEN.blit(playerExp[0], playerExp[1])
 
     # Event Handler
     for event in pygame.event.get():

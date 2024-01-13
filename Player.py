@@ -1,5 +1,5 @@
 from Library import SpriteEntity, loadSprite
-from Library import BLACK, Tiles, GRAVITY, WINDOW_WIDTH, WINDOW_HEIGHT, LEVEL_WIDTH, LEVEL_HEIGHT, BLUE
+from Library import BLACK, Tiles, GRAVITY, WINDOW_WIDTH, WINDOW_HEIGHT, LEVEL_WIDTH, LEVEL_HEIGHT
 from Library import pygame
 
 class Player(SpriteEntity):
@@ -9,6 +9,7 @@ class Player(SpriteEntity):
         self.maxHealth = 100
         self.health = self.maxHealth
         self.speed = Speed
+        self.EXP = 0
 
         # self.WorldObjects = None
         # self.enemyList = []
@@ -36,7 +37,7 @@ class Player(SpriteEntity):
         self.x_shift = 0
         self.y_shift = 0
 
-        self.spriteSheetPNG = pygame.image.load('Assets/fire_knight/spritesheets/SpriteSheet2.png')
+        self.spriteSheetPNG = pygame.image.load('Assets/SpriteSheet2.png')
 
         # Load idle into animation list
         self.animationList.append(
@@ -247,7 +248,7 @@ class Player(SpriteEntity):
         # pygame.draw.rect(self.surface, GREEN, self.rect, 1)
 
         # draw hitBox
-        pygame.draw.rect(self.surface, BLUE, self.hitBox, 1)
+        # pygame.draw.rect(self.surface, BLUE, self.hitBox, 1)
 
     def update(self):
         # decrease special attack cool down

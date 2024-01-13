@@ -4,10 +4,10 @@ import json
 from Settings import *
 
 
-def drawBackground(surface, color, backgrounds, H_scrollValue=0, V_scrollValue=0):
+def drawBackground(surface, backgrounds, H_scrollValue=0, V_scrollValue=0):
     """Fill Background (TEST USE !!!)"""
 
-    surface.fill(color)
+
     for index, i in enumerate(backgrounds):
         pic = pygame.transform.scale(i, (WINDOW_WIDTH * 1.5, WINDOW_HEIGHT * 1.5))
         surface.blit(pic, (0 + index * H_scrollValue,
@@ -48,6 +48,7 @@ def saveEntity(player, enemyList):
         'position': [player.rect.center[0]/TILE_SIZE,
                      player.rect.center[1]/TILE_SIZE],
         'speed': player.speed,
+        'exp': player.EXP
     }
 
     enemyInfo = []
@@ -67,6 +68,14 @@ def saveEntity(player, enemyList):
             'enemy': enemyInfo}
 
     return Dict
+
+def writeText(Text: str, Pos: list[int], Color, fontSize=20):
+    """Create text"""
+    font = pygame.font.Font('freesansbold.ttf', fontSize)
+    text = font.render(Text, True, Color)
+    textRect = text.get_rect()
+    textRect.center = Pos
+    return text, textRect
 
 class SpriteEntity(pygame.sprite.Sprite):
     def __init__(self, surface, position: [int, int]):

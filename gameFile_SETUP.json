@@ -1,41 +1,96 @@
 {
-
-"player" : {
-  "position": [
-    2,
-    22
-  ],
-  "speed": 7
-}
-,
-
-"enemy" : [
-
-  {
-    "type": "f",
-    "position": [
-      25,
-      20
-    ],
-    "speed": 3,
-    "moveRange": [
-      20,
-      35
+    "player": {
+        "position": [
+            4.714285714285714,
+            9.257142857142858
+        ],
+        "speed": 7,
+        "exp": 0
+    },
+    "enemy": [
+        {
+            "type": "f",
+            "position": [
+                27.228571428571428,
+                20.0
+            ],
+            "speed": 3,
+            "moveRange": [
+                20.0,
+                35.0
+            ]
+        },
+        {
+            "type": "s",
+            "position": [
+                22.2,
+                11.0
+            ],
+            "speed": 2,
+            "moveRange": [
+                16.0,
+                24.0
+            ]
+        },
+        {
+            "type": "s",
+            "position": [
+                31.34285714285714,
+                11.0
+            ],
+            "speed": 2,
+            "moveRange": [
+                27.0,
+                37.0
+            ]
+        },
+        {
+            "type": "s",
+            "position": [
+                43.42857142857143,
+                19.0
+            ],
+            "speed": 2,
+            "moveRange": [
+                40.0,
+                50.0
+            ]
+        },
+        {
+            "type": "f",
+            "position": [
+                73.11428571428571,
+                13.0
+            ],
+            "speed": 3,
+            "moveRange": [
+                70.0,
+                80.0
+            ]
+        },
+        {
+            "type": "s",
+            "position": [
+                102.25714285714285,
+                29.0
+            ],
+            "speed": 2,
+            "moveRange": [
+                80.0,
+                110.0
+            ]
+        },
+        {
+            "type": "f",
+            "position": [
+                108.37142857142857,
+                9.0
+            ],
+            "speed": 3,
+            "moveRange": [
+                100.0,
+                130.0
+            ]
+        }
     ]
-  },
-
-  {
-    "type": "s",
-    "position": [
-      17,
-      11
-    ],
-    "speed": 2,
-    "moveRange": [
-      16,
-      24
-    ]
-  }
-
-]
 }

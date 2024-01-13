@@ -9,7 +9,7 @@ class Ground:
         self.tileSize = TILE_SIZE
         self.x = x * self.tileSize
         self.y = y * self.tileSize
-        self.image = pygame.image.load('Assets/Textures&trees/sprite_083.png')
+        self.image = pygame.image.load('Assets/sprite_083.png')
         self.spritesImage = pygame.transform.scale(self.image, [self.tileSize, self.tileSize])
         self.rect = self.spritesImage.get_rect()
         self.rect.topleft = [self.x, self.y]
@@ -64,7 +64,10 @@ class World:
     def loadPlayer(self, Surface):
         playerPos = self.playerInfo['position']
         playerSpeed = self.playerInfo['speed']
-        return Player(Surface, playerPos, playerSpeed)
+        playerEXP = self.playerInfo['exp']
+        player = Player(Surface, playerPos, playerSpeed)
+        player.EXP = playerEXP
+        return player
 
     def loadEnemy(self, Surface):
         enemyList = []

@@ -1,4 +1,4 @@
-from Library import SpriteEntity, loadSprite, BLACK, RED
+from Library import SpriteEntity, loadSprite, BLACK
 from Library import InvincibleFrame, TILE_SIZE
 from Library import pygame
 
@@ -29,7 +29,7 @@ class EnemyClass(SpriteEntity):
         # self.surface.blit(self.maskImage, self.rect)
 
         # draw hit box
-        pygame.draw.rect(self.surface, RED, self.rect, 1)
+        # pygame.draw.rect(self.surface, RED, self.rect, 1)
 
 
     def updateAnimationFrame(self):
@@ -65,6 +65,7 @@ class FlyingEye(EnemyClass):
         self.maxHealth = 70
         self.health = self.maxHealth
         self.type = 'f'
+        self.EXP = 10
 
         self.flightSpriteSheetPNG = pygame.image.load('Assets/Monster/Flying eye/Flight.png')
         self.takeHitSpriteSheetPNG = pygame.image.load('Assets/Monster/Flying eye/Take Hit.png')
@@ -115,6 +116,7 @@ class Skeleton(EnemyClass):
         self.maxHealth = 2
         self.health = self.maxHealth
         self.type = 's'
+        self.EXP = 5
 
 
         self.IdleSpriteSheetPNG = pygame.image.load('Assets/Monster/Skeleton/Idle.png')
